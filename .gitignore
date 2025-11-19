@@ -1,0 +1,42 @@
+# В папке tc2024 создадим файл .gitignore. 
+# Файл .gitignore содержит инструкции по отправке файлов 
+# в git репозиторий. 
+# Файлы папки node_modules не принято добавлять в git репозиторий 
+# так как они добавляются в проект командой npm install.
+
+# Лог-файлы
+logs
+*.log
+
+# Данные, генерируемые во время работы приложения (runtime)
+pids
+*.pid
+*.seed
+
+# Директория для библиотек, "проинструментированных" (instrumented) jscoverage/JSCover
+lib-cov
+
+# Директория с отчетами о покрытии кода, используемая такими инструментами, как istanbul
+coverage
+
+# Временное хранилище Grunt (см. http://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
+
+# Конфигурационные файлы node-waf
+.lock-wscript
+
+# Скомпилированные бинарные дополнения (см. http://nodejs.org/api/addons.html)
+build/Release
+
+# Директория с установленными зависимостями
+# (см. https://docs.npmjs.com/cli/shrinkwrap#caveats)
+node_modules
+
+# Лог-файл отладки npm
+npm-debug.log
+
+# Файлы macOS для хранения настроек директорий
+.DS_Store
+
+# Файл с переменными окружения
+.env
