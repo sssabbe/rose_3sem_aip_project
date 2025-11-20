@@ -115,6 +115,41 @@ router.get('/', function(req, res, next) {
                 .roses-card { border-top: 4px solid #e91e63; }
                 .unusual-card { border-top: 4px solid #4caf50; }
                 .wedding-card { border-top: 4px solid #2196f3; }
+                .featured-flowers {
+                    margin-top: 60px;
+                }
+                .featured-title {
+                    text-align: center;
+                    font-family: 'Playfair Display', serif;
+                    font-size: 2rem;
+                    color: #e91e63;
+                    margin-bottom: 30px;
+                }
+                .featured-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 20px;
+                }
+                .featured-item {
+                    text-align: center;
+                    text-decoration: none;
+                    color: inherit;
+                    transition: transform 0.3s ease;
+                }
+                .featured-item:hover {
+                    transform: translateY(-5px);
+                }
+                .featured-image {
+                    width: 100%;
+                    height: 150px;
+                    object-fit: cover;
+                    border-radius: 15px;
+                    margin-bottom: 10px;
+                }
+                .featured-name {
+                    font-weight: 600;
+                    color: #e91e63;
+                }
             </style>
         </head>
         <body>
@@ -152,6 +187,24 @@ router.get('/', function(req, res, next) {
                         <h3 class="nav-title">Свадебные цветы</h3>
                         <p class="nav-description">Волшебные композиции для самого важного дня в вашей жизни</p>
                     </a>
+                </div>
+
+                <div class="featured-flowers">
+                    <h2 class="featured-title">Избранные цветы</h2>
+                    <div class="featured-grid">
+                        <a href="/flower/rose" class="featured-item">
+                            <img src="/images/2025-11-11%2022.23.35.jpg" alt="Красная роза" class="featured-image">
+                            <div class="featured-name">Красная роза</div>
+                        </a>
+                        <a href="/flower/exotic" class="featured-item">
+                            <img src="/images/2025-11-11%2022.23.43.jpg" alt="Экзотический цветок" class="featured-image">
+                            <div class="featured-name">Экзотический цветок</div>
+                        </a>
+                        <a href="/flower/wedding" class="featured-item">
+                            <img src="/images/2025-11-11%2022.23.47.jpg" alt="Свадебная композиция" class="featured-image">
+                            <div class="featured-name">Свадебная композиция</div>
+                        </a>
+                    </div>
                 </div>
             </div>
         </body>
@@ -609,6 +662,39 @@ router.get('/wedding', function(req, res, next) {
         </body>
         </html>
     `);
+});
+
+/* GET отдельный цветок через EJS шаблон */
+router.get('/flower/:name', function(req, res, next) {
+    const flowerName = req.params.name;
+    
+    // Данные для разных цветов
+    const flowers = {
+        'rose': {
+            title: 'Красная роза',
+            picture: '/images/2025-11-11%2022.23.35.jpg',
+            desc: 'Красная роза — символ страстной любви и романтики. Каждый лепесток источает нежность и элегантность, делая этот цветок идеальным выбором для особых моментов. Наши розы выращиваются с особой заботой и вниманием к деталям.'
+        },
+        'exotic': {
+            title: 'Экзотический цветок',
+            picture: '/images/2025-11-11%2022.23.43.jpg', 
+            desc: 'Уникальные экзотические цветы, привезенные из самых отдаленных уголков мира. Их необычная форма и яркие цвета создают неповторимую атмосферу волшебства. Каждый цветок — это настоящее произведение искусства природы.'
+        },
+        'wedding': {
+            title: 'Свадебная композиция',
+            picture: '/images/2025-11-11%2022.23.47.jpg',
+            desc: 'Изысканная свадебная композиция, созданная специально для самого важного дня в вашей жизни. Нежные оттенки и гармоничное сочетание цветов подчеркнут красоту момента и создадут атмосферу настоящей сказки.'
+        }
+    };
+    
+    const flower = flowers[flowerName] || {
+        title: 'Цветок',
+        picture: '/images/default.jpg',
+        desc: 'Прекрасный цветок из нашей коллекции.'
+    };
+    
+
+    res.render('rose', flower);
 });
 
 module.exports = router;

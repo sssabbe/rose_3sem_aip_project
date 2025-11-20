@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %> - Flowers by Sabi</title>
+    <link rel="stylesheet" href="/stylesheets/style.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background: linear-gradient(135deg, #fffaf0 0%, #f8f8ff 50%, #fff0f5 100%);
+            min-height: 100vh;
+            color: #5a5a5a;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .page-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            color: #e91e63;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .flower-image {
+            width: 100%;
+            max-width: 500px;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            margin: 20px 0;
+            transition: transform 0.3s ease;
+        }
+        .flower-image:hover {
+            transform: scale(1.02);
+        }
+        .description {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            color: #666;
+            line-height: 1.6;
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #fff5f5 0%, #fff0f0 100%);
+            border-radius: 15px;
+            border-left: 4px solid #e91e63;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 30px;
+            padding: 12px 25px;
+            background: #e91e63;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            box-shadow: 0 5px 15px rgba(233, 30, 99, 0.3);
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .back-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(233, 30, 99, 0.4);
+            background: #c2185b;
+        }
+        .quote {
+            font-style: italic;
+            color: #888;
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title"><%= title %></h1>
+        
+        <img src="<%= picture %>" alt="<%= title %>" class="flower-image" />
+        
+        <div class="description">
+            <%= desc %>
+        </div>
+        
+        <p class="quote">"Цветы — это любовь, говорящая на языке красоты"</p>
+        
+        <a href="/" class="back-link">← Вернуться в магазин</a>
+    </div>
+</body>
+</html>
