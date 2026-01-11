@@ -9,6 +9,7 @@
                     <th>Название</th>
                     <th>Описание</th>
                     <th>Цена</th>
+                    <th>Действие</th>
                 </tr>
             </thead>
             <tbody>
@@ -17,13 +18,31 @@
                     <td><%= product.name %></td>
                     <td><%= product.description || '-' %></td>
                     <td class="text-success fw-bold"><%= product.price %> ₽</td>
+                    <td>
+                        <!-- ФОРМА ДЛЯ ДОБАВЛЕНИЯ В КОРЗИНУ -->
+                        <form action="/categories/cart/add" method="POST" class="d-inline">
+                            <input type="hidden" name="id" value="<%= product.id %>">
+                            <input type="hidden" name="name" value="<%= product.name %>">
+                            <input type="hidden" name="price" value="<%= product.price %>">
+                            <button type="submit" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-cart-plus"></i> В корзину
+                            </button>
+                        </form>
+                    </td>
                 </tr>
                 <% }) %>
             </tbody>
         </table>
     <% } else { %>
-        <p class="text-muted">Аксессуары не найдены.</p>
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Аксессуары скоро появятся в нашем ассортименте!
+        </div>
     <% } %>
     
-    <a href="/categories" class="btn btn-secondary">Назад</a>
+    <div class="mt-4">
+        <a href="/categories" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Назад к категориям
+        </a>
+    </div>
 </div>

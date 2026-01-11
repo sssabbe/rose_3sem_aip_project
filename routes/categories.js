@@ -1,77 +1,178 @@
 // routes/categories.js
 var express = require('express');
 var router = express.Router();
-// ПОДКЛЮЧАЕМ МОДЕЛЬ (как в примере с cats.js)
-var Product = require('../models/Product').Product;
 
 /* GET categories listing. */
 router.get('/', function(req, res, next) {
-    res.send('Новый маршрутизатор, для маршрутов, начинающихся с /categories');
-});
-
-/* Страница букетов */
-router.get('/bouquets', async function(req, res, next) {
-    try {
-        // Находим все букеты в базе данных
-        var bouquets = await Product.find({ category: 'bouquet' });
-        console.log('Найдено букетов:', bouquets.length);
-        
-        res.render('categories/bouquets', {
-            title: 'Букеты - Магазин цветов "Роза"',
-            products: bouquets
-        });
-    } catch (err) {
-        next(err);
+    // Инициализируем корзину если ее нет
+    if (!req.session.cart) {
+        req.session.cart = [];
     }
+    
+    res.render('categories/index', {
+        title: 'Категории - Магазин цветов "Роза"',
+        cartCount: req.session.cart.length,
+        categories: [
+            {
+                name: 'Букеты',
+                url: '/categories/bouquets',
+                icon: 'fas fa-bouquet',
+                description: 'Готовые композиции из свежих цветов',
+                count: 12
+            },
+            {
+                name: 'Цветы',
+                url: '/categories/flowers',
+                icon: 'fas fa-flower',
+                description: 'Отдельные цветы для составления букетов',
+                count: 24
+            },
+            {
+                name: 'Аксессуары',
+                url: '/categories/accessories',
+                icon: 'fas fa-ribbon',
+                description: 'Вазы, ленты, открытки и упаковка',
+                count: 18
+            }
+        ]
+    });
 });
 
-/* Страница цветов */
-router.get('/flowers', async function(req, res, next) {
-    try {
-        var flowers = await Product.find({ category: 'flower' });
-        console.log('Найдено цветов:', flowers.length);
-        
-        res.render('categories/flowers', {
-            title: 'Цветы - Магазин цветов "Роза"',
-            products: flowers
-        });
-    } catch (err) {
-        next(err);
-    }
-});
-
-/* Страница аксессуаров */
-router.get('/accessories', async function(req, res, next) {
-    try {
-        var accessories = await Product.find({ category: 'accessory' });
-        console.log('Найдено аксессуаров:', accessories.length);
-        
-        res.render('categories/accessories', {
-            title: 'Аксессуары - Магазин цветов "Роза"',
-            products: accessories
-        });
-    } catch (err) {
-        next(err);
-    }
-});
-
-/* Страница отдельного товара (аналог /:nick из примера) */
-router.get('/:category/:id', async function(req, res, next) {
-    try {
-        var product = await Product.findById(req.params.id);
-        console.log('Найден товар:', product);
-        
-        if (!product) {
-            return next(new Error("Такого товара нет в магазине"));
+/* GET /categories/bouquets */
+router.get('/bouquets', function(req, res, next) {
+    // Тестовые данные для букетов
+    const bouquets = [
+        {
+            id: 1,
+            name: 'Романтический букет',
+            price: 2500,
+            description: 'Красные розы и белые лилии'
+        },
+        {
+            id: 2,
+            name: 'Весенний букет',
+            price: 1800,
+            description: 'Тюльпаны и гипсофилы'
+        },
+        {
+            id: 3,
+            name: 'Свадебный букет',
+            price: 3500,
+            description: 'Белые розы и орхидеи'
         }
-        
-        res.render('categories/product-detail', {
-            title: product.name + ' - Магазин цветов "Роза"',
-            product: product
-        });
-    } catch (err) {
-        next(err);
+    ];
+    
+    res.render('categories/bouquets', {
+        title: 'Букеты - Магазин цветов "Роза"',
+        pageTitle: 'Наши букеты',
+        products: bouquets
+    });
+});
+
+/* GET /categories/flowers */
+router.get('/flowers', function(req, res, next) {
+    // Тестовые данные для цветов
+    const flowers = [
+        {
+            id: 1,
+            name: 'Красная роза',
+            price: 300,
+            description: 'Классическая красная роза'
+        },
+        {
+            id: 2,
+            name: 'Белая лилия',
+            price: 250,
+            description: 'Элегантная белая лилия'
+        },
+        {
+            id: 3,
+            name: 'Розовый тюльпан',
+            price: 200,
+            description: 'Нежный розовый тюльпан'
+        }
+    ];
+    
+    res.render('categories/flowers', {
+        title: 'Цветы - Магазин цветов "Роза"',
+        pageTitle: 'Срезанные цветы',
+        products: flowers
+    });
+});
+
+/* GET /categories/accessories */
+router.get('/accessories', function(req, res, next) {
+    // Тестовые данные для аксессуаров
+    const accessories = [
+        {
+            id: 1,
+            name: 'Стеклянная ваза',
+            price: 1200,
+            description: 'Элегантная ваза для цветов'
+        },
+        {
+            id: 2,
+            name: 'Шелковая лента',
+            price: 150,
+            description: 'Лента для украшения букета'
+        },
+        {
+            id: 3,
+            name: 'Подарочная открытка',
+            price: 100,
+            description: 'Открытка с теплыми пожеланиями'
+        }
+    ];
+    
+    res.render('categories/accessories', {
+        title: 'Аксессуары - Магазин цветов "Роза"',
+        pageTitle: 'Аксессуары для цветов',
+        products: accessories
+    });
+});
+
+/* GET корзина покупок */
+router.get('/cart', function(req, res, next) {
+    // Инициализируем корзину если ее нет
+    if (!req.session.cart) {
+        req.session.cart = [];
     }
+    
+    // Подсчитываем общую сумму
+    const total = req.session.cart.reduce((sum, item) => sum + item.price, 0);
+    
+    res.render('categories/cart', {
+        title: 'Корзина - Магазин цветов "Роза"',
+        cart: req.session.cart,
+        total: total,
+        cartCount: req.session.cart.length
+    });
+});
+
+/* POST добавить товар в корзину */
+router.post('/cart/add', function(req, res, next) {
+    const { id, name, price } = req.body;
+    
+    // Инициализируем корзину если ее нет
+    if (!req.session.cart) {
+        req.session.cart = [];
+    }
+    
+    // Добавляем товар в корзину
+    req.session.cart.push({
+        id: id || Date.now(),
+        name: name || 'Товар',
+        price: parseInt(price) || 0,
+        addedAt: new Date().toLocaleString('ru-RU')
+    });
+    
+    res.redirect('/categories/cart');
+});
+
+/* POST очистить корзину */
+router.post('/cart/clear', function(req, res, next) {
+    req.session.cart = [];
+    res.redirect('/categories/cart');
 });
 
 module.exports = router;

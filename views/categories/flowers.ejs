@@ -24,10 +24,17 @@
                         <p class="card-text"><%= product.description %></p>
                         <div class="mt-3">
                             <span class="h4 text-success d-block mb-2"><%= product.price %> ₽</span>
-                            <button class="btn btn-outline-success btn-sm">
-                                <i class="fas fa-plus"></i> Добавить
-                            </button>
-                            <a href="/flowers/<%= product._id %>" class="btn btn-link btn-sm">
+                            <!-- ИСПРАВЛЕННАЯ КНОПКА - ФОРМА ДЛЯ ДОБАВЛЕНИЯ В КОРЗИНУ -->
+                            <form action="/categories/cart/add" method="POST" class="d-inline">
+                                <input type="hidden" name="id" value="<%= product.id %>">
+                                <input type="hidden" name="name" value="<%= product.name %>">
+                                <input type="hidden" name="price" value="<%= product.price %>">
+                                <button type="submit" class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-cart-plus"></i> В корзину
+                                </button>
+                            </form>
+                            <!-- Можно оставить или удалить ссылку "Подробнее" -->
+                            <a href="/categories/flowers/<%= product.id %>" class="btn btn-link btn-sm">
                                 Подробнее
                             </a>
                         </div>
