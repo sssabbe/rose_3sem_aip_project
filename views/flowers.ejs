@@ -1,26 +1,5 @@
-<div class="container mt-4">
-  <h1 class="mb-4"><%= pageTitle %></h1>
-  
-  <% if (groupedProducts && Object.keys(groupedProducts).length > 0) { %>
-    <% Object.keys(groupedProducts).forEach(type => { %>
-      <div class="mb-5">
-        <h3 class="border-bottom pb-2"><%= type %></h3>
-        <div class="row row-cols-1 row-cols-md-4 g-3">
-          <% groupedProducts[type].forEach(product => { %>
-            <div class="col">
-              <div class="card h-100">
-                <div class="card-body text-center">
-                  <h6 class="card-title"><%= product.name %></h6>
-                  <p class="card-text text-success fw-bold"><%= product.price %> ₽</p>
-                  <a href="/flowers/<%= product._id %>" class="btn btn-sm btn-outline-primary">Подробнее</a>
-                </div>
-              </div>
-            </div>
-          <% }) %>
-        </div>
-      </div>
-    <% }) %>
-  <% } else { %>
-    <div class="alert alert-info">Цветы пока не добавлены.</div>
-  <% } %>
+<div class="container mt-5">
+    <h1>Цветы 🌸</h1>
+    <p>Здесь будут отображаться отдельные цветы.</p>
+    <a href="/categories" class="btn btn-secondary">Назад к категориям</a>
 </div>
