@@ -1,41 +1,48 @@
+
 const mongoose = require('mongoose');
 
-// Подключаемся к базе (можно использовать вашу tc2024 или новую)
-mongoose.connect('mongodb://127.0.0.1:27017/testMongoose2024');
 
-// Создаем схему для цветка (аналогично схеме для кота)
-var schema = mongoose.Schema({ 
-    name: String,
-    type: String,
-    price: Number
+mongoose.connect('mongodb://127.0.0.1:27017/tc2024');
+
+
+const Flower = mongoose.model('Flower', { 
+    title: String,
+    nick: String,
+    avatar: String,
+    desc: String 
 });
 
-// Добавляем метод к схеме (как в примере с meow)
-schema.methods.bloom = function() {
-    console.log(this.name + " расцвел и стоит " + this.price + " рублей");
-}
 
-// Создаем модель Flower на основе схемы
-const Flower = mongoose.model('Flower', schema);
-
-// Создаем новый цветок
-const rose = new Flower({ 
-    name: 'Алая роза',
-    type: 'rose',
-    price: 650
+const newFlower = new Flower({ 
+    title: 'Розовый тюльпан',
+    nick: 'pink_tulip',
+    avatar: '/images/tulip.jpg',
+    desc: 'Нежный розовый тюльпан весеннего цветения' 
 });
 
-// Сохраняем и вызываем метод
-rose.save()
+
+newFlower.save()
     .then(() => {
-        console.log('✅ Цветок сохранен в базу данных');
-        rose.bloom(); // Вызываем наш метод
+        console.log('✅ Цветок сохранен в базу tc2024');
+        console.log('Название:', newFlower.title);
+        console.log('Ник:', newFlower.nick);
+        console.log('Описание:', newFlower.desc);
+        
+        // Можно добавить дополнительную проверку
+        return Flower.find();
     })
-    .catch(error => {
-        console.error('❌ Ошибка:', error);
-    })
-    .finally(() => {
+    .then(flowers => {
+        console.log('\n📊 Всего цветов в базе:', flowers.length);
+        console.log('Цветы в базе:');
+        flowers.forEach(flower => {
+            console.log(`- ${flower.title} (${flower.nick})`);
+        });
+        
         // Закрываем соединение
         mongoose.connection.close();
-        console.log('🔌 Соединение закрыто');
+        console.log('\n🔌 Соединение с MongoDB закрыто');
+    })
+    .catch(error => {
+        console.error('❌ Ошибка сохранения:', error.message);
+        mongoose.connection.close();
     });
