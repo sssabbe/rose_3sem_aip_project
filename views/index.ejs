@@ -1,652 +1,152 @@
-<!-- Герой-секция с розовым градиентом -->
-<div class="hero-pink">
-    <div class="container">
-        <div class="row align-items-center min-vh-70">
-            <div class="col-lg-6">
-                <div class="mb-4">
-                    <span class="badge-roses">🌹 Коллекция роз</span>
-                </div>
-                <h1 class="display-1 fw-bold text-white mb-4">Розовые мечты</h1>
-                <p class="lead text-pink-light mb-4">Нежные бутоны, бархатные лепестки и волшебный аромат. Каждая роза — это история любви, застывшая в лепестках.</p>
-                <div class="d-flex gap-3">
-                    <a href="#roses-catalog" class="btn-rose-primary">
-                        <i class="bi bi-heart me-2"></i>Выбрать розу
-                    </a>
-                    <a href="#bouquets" class="btn-rose-outline">
-                        <i class="bi bi-flower1 me-2"></i>Собрать букет
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-6 text-center position-relative">
-                <div class="floating-rose">
-                    <i class="bi bi-flower1"></i>
-                </div>
-                <div class="rose-sparkle">✨</div>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="/">🌹 Магазин цветов</a>
+            <div class="navbar-nav">
+                <span class="nav-item nav-link">
+                    Посещений: <%= visitCount %>
+                </span>
+                <span class="nav-item nav-link">
+                    Сессия: <%= sessionVisitCount %>
+                </span>
             </div>
         </div>
-    </div>
-</div>
+    </nav>
 
-<!-- Каталог роз -->
-<div class="container py-5" id="roses-catalog">
-    <div class="text-center mb-5">
-        <h2 class="section-title-rose">🌸 Наши розы</h2>
-        <p class="text-muted-rose">Выберите свою идеальную розу из нашей коллекции</p>
-    </div>
-
-    <div class="row g-4">
-        <!-- Красная роза -->
-        <div class="col-md-4">
-            <div class="rose-card">
-                <div class="rose-card-image red-rose">
-                    <div class="rose-badge">Любовь</div>
-                </div>
-                <div class="rose-card-body">
-                    <h3 class="rose-card-title">Алая страсть</h3>
-                    <p class="rose-card-text">Классическая красная роза с бархатными лепестками. Символ вечной любви и преданности.</p>
-                    <div class="rose-price">
-                        <span class="rose-price-current">650 ₽</span>
-                        <span class="rose-price-old">750 ₽</span>
+    <div class="container mt-4">
+        <h1>Добро пожаловать в магазин цветов!</h1>
+        
+        <!-- Каталог роз -->
+        <h2 class="mt-5">Наши розы</h2>
+        <div class="row">
+            <% roses.forEach(rose => { %>
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= rose.name %></h5>
+                        <p class="card-text"><%= rose.description %></p>
+                        <p class="card-text"><strong><%= rose.price %> ₽</strong></p>
+                        <form action="/add-to-cart" method="POST">
+                            <input type="hidden" name="productId" value="<%= rose.id %>">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-primary">Добавить в корзину</button>
+                        </form>
                     </div>
-                    <button class="rose-card-btn">
-                        <i class="bi bi-heart me-2"></i>В корзину
-                    </button>
                 </div>
             </div>
+            <% }); %>
         </div>
 
-        <!-- Розовая роза -->
-        <div class="col-md-4">
-            <div class="rose-card">
-                <div class="rose-card-image pink-rose">
-                    <div class="rose-badge">Нежность</div>
-                </div>
-                <div class="rose-card-body">
-                    <h3 class="rose-card-title">Нежный рассвет</h3>
-                    <p class="rose-card-text">Розовая роза с градиентом от нежно-розового к белому. Олицетворение юности и невинности.</p>
-                    <div class="rose-price">
-                        <span class="rose-price-current">550 ₽</span>
-                        <span class="rose-price-old">650 ₽</span>
+        <!-- Каталог букетов -->
+        <h2 class="mt-5">Готовые букеты</h2>
+        <div class="row">
+            <% bouquets.forEach(bouquet => { %>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= bouquet.name %></h5>
+                        <p class="card-text"><%= bouquet.description %></p>
+                        <p class="card-text"><strong><%= bouquet.price %> ₽</strong></p>
+                        <form action="/add-to-cart" method="POST">
+                            <input type="hidden" name="productId" value="<%= bouquet.id %>">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-success">Добавить в корзину</button>
+                        </form>
                     </div>
-                    <button class="rose-card-btn">
-                        <i class="bi bi-heart me-2"></i>В корзину
-                    </button>
                 </div>
             </div>
+            <% }); %>
         </div>
 
-        <!-- Белая роза -->
-        <div class="col-md-4">
-            <div class="rose-card">
-                <div class="rose-card-image white-rose">
-                    <div class="rose-badge">Чистота</div>
-                </div>
-                <div class="rose-card-body">
-                    <h3 class="rose-card-title">Белое облако</h3>
-                    <p class="rose-card-text">Идеально белая роза с тонким ароматом. Символ чистоты, новых начинаний и искренности.</p>
-                    <div class="rose-price">
-                        <span class="rose-price-current">600 ₽</span>
-                        <span class="rose-price-old">700 ₽</span>
-                    </div>
-                    <button class="rose-card-btn">
-                        <i class="bi bi-heart me-2"></i>В корзину
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Букеты из роз -->
-<div class="rose-bouquets-section" id="bouquets">
-    <div class="container py-5">
-        <div class="text-center mb-5">
-            <h2 class="section-title-rose">💐 Готовые букеты</h2>
-            <p class="text-muted-rose">Собранные с любовью и вниманием к деталям</p>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-md-6">
-                <div class="bouquet-card">
-                    <div class="bouquet-header">
-                        <h3>Букет "101 роза"</h3>
-                        <div class="bouquet-hearts">
-                            <i class="bi bi-heart-fill"></i>
-                            <i class="bi bi-heart-fill"></i>
-                            <i class="bi bi-heart-fill"></i>
+        <!-- Корзина -->
+        <h2 class="mt-5">🛒 Ваша корзина</h2>
+        <% if (cart.items.length > 0) { %>
+            <div class="card">
+                <div class="card-body">
+                    <% cart.items.forEach(item => { %>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <strong><%= item.name %></strong>
+                            <span class="text-muted">× <%= item.quantity %></span>
+                            <span class="ms-3"><%= item.price * item.quantity %> ₽</span>
                         </div>
+                        <form action="/remove-from-cart" method="POST" class="mb-0">
+                            <input type="hidden" name="productId" value="<%= item.id %>">
+                            <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                        </form>
                     </div>
-                    <p class="bouquet-desc">Роскошный букет из 101 алой розы для самых важных признаний. Упакован в шелковую бумагу.</p>
-                    <div class="bouquet-price">15 000 ₽</div>
-                    <button class="bouquet-btn">
-                        <i class="bi bi-gift me-2"></i>Заказать букет
-                    </button>
+                    <% }); %>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Итого: <%= cart.total %> ₽</h4>
+                        <form action="/clear-cart" method="POST" class="mb-0">
+                            <button type="submit" class="btn btn-warning">Очистить корзину</button>
+                        </form>
+                    </div>
+                    <p class="text-muted mt-2 mb-0">
+                        <small>Обновлено: <%= cart.lastUpdated %></small>
+                    </p>
                 </div>
             </div>
+        <% } else { %>
+            <div class="alert alert-info">
+                Корзина пуста. Добавьте товары из каталога!
+            </div>
+        <% } %>
 
+        <!-- Информация -->
+        <div class="row mt-5">
             <div class="col-md-6">
-                <div class="bouquet-card">
-                    <div class="bouquet-header">
-                        <h3>Букет "Милая нежность"</h3>
-                        <div class="bouquet-hearts">
-                            <i class="bi bi-heart-fill"></i>
-                            <i class="bi bi-heart-fill"></i>
-                            <i class="bi bi-heart-fill"></i>
-                        </div>
+                <div class="card">
+                    <div class="card-header">🍪 Куки</div>
+                    <div class="card-body">
+                        <p>Посещений: <strong><%= visitCount %></strong></p>
+                        <p>Последний визит: <strong><%= lastVisit %></strong></p>
+                        <a href="/clear-cookies" class="btn btn-sm btn-outline-secondary">Очистить куки</a>
                     </div>
-                    <p class="bouquet-desc">Нежные розовые и белые розы в сочетании с эвкалиптом. Идеально для свидания.</p>
-                    <div class="bouquet-price">3 500 ₽</div>
-                    <button class="bouquet-btn">
-                        <i class="bi bi-gift me-2"></i>Заказать букет
-                    </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">🔐 Сессия</div>
+                    <div class="card-body">
+                        <p>Посещений в сессии: <strong><%= sessionVisitCount %></strong></p>
+                        <p>Первое посещение: <strong><%= firstVisit %></strong></p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Цитата о розах -->
-<div class="container py-5 my-5">
-    <div class="rose-quote">
-        <div class="rose-quote-icon">
-            <i class="bi bi-quote"></i>
-        </div>
-        <p class="rose-quote-text">"Розы говорят на языке сердца, который понимают все влюбленные."</p>
-        <div class="rose-quote-author">— Колетт</div>
-    </div>
-</div>
-
-<!-- Уход за розами -->
-<div class="container py-5">
-    <div class="row align-items-center">
-        <div class="col-lg-6">
-            <div class="care-guide">
-                <h3 class="care-title">💖 Как ухаживать за розами</h3>
-                <ul class="care-list">
-                    <li><i class="bi bi-droplet"></i> Меняйте воду каждые 2 дня</li>
-                    <li><i class="bi bi-scissors"></i> Подрезайте стебли под углом 45°</li>
-                    <li><i class="bi bi-sun"></i> Держите в прохладном месте, избегая прямых солнечных лучей</li>
-                    <li><i class="bi bi-flower2"></i> Добавляйте в воду специальную подкормку для цветов</li>
-                </ul>
-            </div>
-        </div>
-        <div class="col-lg-6 text-center">
-            <div class="rose-animation">
-                <div class="rose-petal"></div>
-                <div class="rose-petal"></div>
-                <div class="rose-petal"></div>
-                <i class="bi bi-flower1 rose-main"></i>
+        <!-- Форма имени -->
+        <div class="card mt-4">
+            <div class="card-header">✏️ Ваше имя</div>
+            <div class="card-body">
+                <form action="/set-name" method="POST">
+                    <div class="mb-3">
+                        <input type="text" name="userName" class="form-control" 
+                               value="<%= userName === 'Гость' ? '' : userName %>" 
+                               placeholder="Введите ваше имя">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Сохранить имя</button>
+                </form>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Призыв к действию -->
-<div class="container py-5">
-    <div class="cta-rose text-center">
-        <h2 class="cta-rose-title">Готовы подарить розу?</h2>
-        <p class="cta-rose-text">Выберите свою розу или соберите уникальный букет с нашим флористом</p>
-        <div class="d-flex justify-content-center gap-3 mt-4">
-            <button class="btn-rose-cta" data-bs-toggle="modal" data-bs-target="#consultModal">
-                <i class="bi bi-chat-heart me-2"></i>Бесплатная консультация
-            </button>
-            <a href="tel:+74951234567" class="btn-rose-phone">
-                <i class="bi bi-telephone me-2"></i>Позвонить
-            </a>
+    <footer class="mt-5 py-3 bg-light text-center">
+        <div class="container">
+            <p class="mb-0">Магазин цветов "Роза" • Сессии и куки работают!</p>
         </div>
-    </div>
-</div>
+    </footer>
 
-<!-- Стили -->
-<style>
-    /* Основные цвета */
-    :root {
-        --rose-primary: #ff69b4;
-        --rose-light: #ffb6c1;
-        --rose-lighter: #ffe4e9;
-        --rose-dark: #db7093;
-        --rose-gradient: linear-gradient(135deg, #ffb6c1 0%, #ff69b4 100%);
-    }
-
-    /* Герой секция */
-    .hero-pink {
-        background: var(--rose-gradient);
-        border-radius: 0 0 40px 40px;
-        color: white;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .hero-pink::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
-    }
-
-    .badge-roses {
-        background: rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(10px);
-        padding: 10px 20px;
-        border-radius: 50px;
-        font-size: 1.1rem;
-        display: inline-block;
-    }
-
-    /* Карточки роз */
-    .rose-card {
-        background: white;
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(255, 182, 193, 0.2);
-        transition: transform 0.3s, box-shadow 0.3s;
-        border: 2px solid var(--rose-lighter);
-    }
-
-    .rose-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 40px rgba(255, 182, 193, 0.4);
-    }
-
-    .rose-card-image {
-        height: 250px;
-        position: relative;
-    }
-
-    .red-rose { background: linear-gradient(45deg, #ff6b6b, #ff8e8e); }
-    .pink-rose { background: linear-gradient(45deg, #ffb6c1, #ffd1dc); }
-    .white-rose { background: linear-gradient(45deg, #f8f9fa, #ffffff); }
-
-    .rose-badge {
-        position: absolute;
-        top: 15px;
-        left: 15px;
-        background: var(--rose-primary);
-        color: white;
-        padding: 5px 15px;
-        border-radius: 20px;
-        font-size: 0.9rem;
-    }
-
-    .rose-card-body {
-        padding: 25px;
-    }
-
-    .rose-card-title {
-        color: var(--rose-dark);
-        font-size: 1.5rem;
-        margin-bottom: 10px;
-    }
-
-    .rose-card-text {
-        color: #666;
-        line-height: 1.6;
-        margin-bottom: 20px;
-    }
-
-    .rose-price {
-        margin-bottom: 20px;
-    }
-
-    .rose-price-current {
-        font-size: 1.8rem;
-        color: var(--rose-primary);
-        font-weight: bold;
-    }
-
-    .rose-price-old {
-        text-decoration: line-through;
-        color: #999;
-        margin-left: 10px;
-        font-size: 1.2rem;
-    }
-
-    .rose-card-btn {
-        width: 100%;
-        padding: 12px;
-        background: var(--rose-gradient);
-        border: none;
-        border-radius: 15px;
-        color: white;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .rose-card-btn:hover {
-        background: var(--rose-dark);
-        transform: scale(1.05);
-    }
-
-    /* Букеты */
-    .rose-bouquets-section {
-        background: var(--rose-lighter);
-        border-radius: 40px;
-    }
-
-    .bouquet-card {
-        background: white;
-        padding: 30px;
-        border-radius: 25px;
-        box-shadow: 0 8px 25px rgba(255, 182, 193, 0.15);
-        border-left: 5px solid var(--rose-primary);
-    }
-
-    .bouquet-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-    }
-
-    .bouquet-header h3 {
-        color: var(--rose-dark);
-        margin: 0;
-    }
-
-    .bouquet-hearts {
-        color: var(--rose-primary);
-    }
-
-    .bouquet-desc {
-        color: #666;
-        line-height: 1.6;
-        margin-bottom: 20px;
-    }
-
-    .bouquet-price {
-        font-size: 2rem;
-        color: var(--rose-primary);
-        font-weight: bold;
-        margin-bottom: 20px;
-    }
-
-    .bouquet-btn {
-        width: 100%;
-        padding: 12px;
-        background: white;
-        border: 2px solid var(--rose-primary);
-        color: var(--rose-primary);
-        border-radius: 15px;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .bouquet-btn:hover {
-        background: var(--rose-primary);
-        color: white;
-    }
-
-    /* Цитата */
-    .rose-quote {
-        background: var(--rose-lighter);
-        padding: 50px;
-        border-radius: 30px;
-        text-align: center;
-        position: relative;
-    }
-
-    .rose-quote-icon {
-        font-size: 3rem;
-        color: var(--rose-primary);
-        margin-bottom: 20px;
-    }
-
-    .rose-quote-text {
-        font-size: 1.8rem;
-        color: var(--rose-dark);
-        font-style: italic;
-        margin-bottom: 10px;
-    }
-
-    .rose-quote-author {
-        color: var(--rose-primary);
-        font-weight: bold;
-    }
-
-    /* Уход */
-    .care-guide {
-        background: white;
-        padding: 40px;
-        border-radius: 25px;
-        box-shadow: 0 10px 30px rgba(255, 182, 193, 0.15);
-    }
-
-    .care-title {
-        color: var(--rose-dark);
-        margin-bottom: 25px;
-    }
-
-    .care-list {
-        list-style: none;
-        padding: 0;
-    }
-
-    .care-list li {
-        padding: 10px 0;
-        color: #666;
-        font-size: 1.1rem;
-    }
-
-    .care-list li i {
-        color: var(--rose-primary);
-        margin-right: 10px;
-        font-size: 1.2rem;
-    }
-
-    /* Анимация розы */
-    .rose-animation {
-        position: relative;
-        height: 300px;
-    }
-
-    .rose-main {
-        font-size: 8rem;
-        color: var(--rose-primary);
-        animation: float 3s ease-in-out infinite;
-    }
-
-    .rose-petal {
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        background: var(--rose-light);
-        border-radius: 50%;
-        animation: fall 10s linear infinite;
-    }
-
-    .rose-petal:nth-child(1) {
-        top: 10%;
-        left: 20%;
-        animation-delay: 0s;
-    }
-
-    .rose-petal:nth-child(2) {
-        top: 30%;
-        left: 70%;
-        animation-delay: 3s;
-    }
-
-    .rose-petal:nth-child(3) {
-        top: 60%;
-        left: 40%;
-        animation-delay: 6s;
-    }
-
-    /* Кнопки */
-    .btn-rose-primary {
-        background: var(--rose-primary);
-        color: white;
-        padding: 15px 30px;
-        border-radius: 25px;
-        text-decoration: none;
-        font-weight: bold;
-        border: none;
-        transition: all 0.3s;
-    }
-
-    .btn-rose-primary:hover {
-        background: var(--rose-dark);
-        color: white;
-        transform: scale(1.05);
-    }
-
-    .btn-rose-outline {
-        background: transparent;
-        color: white;
-        padding: 15px 30px;
-        border-radius: 25px;
-        text-decoration: none;
-        font-weight: bold;
-        border: 2px solid white;
-        transition: all 0.3s;
-    }
-
-    .btn-rose-outline:hover {
-        background: white;
-        color: var(--rose-primary);
-    }
-
-    .btn-rose-cta {
-        background: var(--rose-gradient);
-        color: white;
-        padding: 15px 30px;
-        border-radius: 25px;
-        border: none;
-        font-size: 1.2rem;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-    .btn-rose-phone {
-        background: white;
-        color: var(--rose-primary);
-        padding: 15px 30px;
-        border-radius: 25px;
-        text-decoration: none;
-        border: 2px solid var(--rose-primary);
-        transition: all 0.3s;
-    }
-
-    /* Анимации */
-    @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-20px); }
-    }
-
-    @keyframes fall {
-        0% {
-            transform: translateY(-100px) rotate(0deg);
-            opacity: 1;
-        }
-        100% {
-            transform: translateY(300px) rotate(360deg);
-            opacity: 0;
-        }
-    }
-
-    /* Тексты */
-    .section-title-rose {
-        color: var(--rose-dark);
-        font-size: 2.5rem;
-        position: relative;
-        display: inline-block;
-    }
-
-    .section-title-rose::after {
-        content: '';
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100px;
-        height: 4px;
-        background: var(--rose-primary);
-        border-radius: 2px;
-    }
-
-    .text-muted-rose {
-        color: #ff8e8e !important;
-    }
-
-    .text-pink-light {
-        color: #ffe4e9 !important;
-    }
-
-    /* Отзывчивость */
-    @media (max-width: 768px) {
-        .display-1 {
-            font-size: 3rem;
-        }
-        
-        .rose-card {
-            margin-bottom: 20px;
-        }
-    }
-</style>
-
-<script>
-    // Добавляем анимацию при прокрутке
-    document.addEventListener('DOMContentLoaded', function() {
-        // Анимация лепестков
-        function createPetal() {
-            const petal = document.createElement('div');
-            petal.className = 'rose-petal';
-            petal.style.left = Math.random() * 100 + '%';
-            petal.style.width = Math.random() * 15 + 10 + 'px';
-            petal.style.height = petal.style.width;
-            petal.style.background = `rgba(255, 182, 193, ${Math.random() * 0.5 + 0.3})`;
-            petal.style.animationDuration = Math.random() * 5 + 5 + 's';
-            petal.style.animationDelay = Math.random() * 5 + 's';
-            document.querySelector('.hero-pink').appendChild(petal);
-            
-            setTimeout(() => {
-                petal.remove();
-            }, 10000);
-        }
-        
-        // Создаем лепестки каждую секунду
-        setInterval(createPetal, 1000);
-        
-        // Добавляем сердечки при клике
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.rose-card-btn, .bouquet-btn')) {
-                const heart = document.createElement('div');
-                heart.innerHTML = '💖';
-                heart.style.position = 'fixed';
-                heart.style.left = e.clientX + 'px';
-                heart.style.top = e.clientY + 'px';
-                heart.style.fontSize = '2rem';
-                heart.style.pointerEvents = 'none';
-                heart.style.zIndex = '9999';
-                heart.style.animation = 'floatUp 2s ease-out forwards';
-                
-                document.body.appendChild(heart);
-                
-                setTimeout(() => {
-                    heart.remove();
-                }, 2000);
-            }
-        });
-    });
-    
-    // Добавляем CSS для всплывающих сердечек
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes floatUp {
-            0% {
-                transform: translateY(0) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100px) scale(0);
-                opacity: 0;
-            }
-        }
-    `;
-    document.head.appendChild(style);
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
