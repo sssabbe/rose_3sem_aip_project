@@ -1,57 +1,144 @@
-<!-- views/categories/index.ejs -->
-<section class="container py-5">
-    <div class="text-center mb-5">
-        <h1 class="display-5 mb-3">Категории цветов</h1>
-        <p class="lead text-muted">Выберите категорию для просмотра нашего ассортимента</p>
-    </div>
-
-    <div class="row">
-        <% categories.forEach(category => { %>
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-lg border-0">
-                <div class="card-body text-center p-5">
-                    <div class="category-icon mb-4">
-                        <i class="<%= category.icon %> fa-4x text-primary"></i>
+<!-- views/index.ejs -->
+<!-- Герой-секция -->
+<section class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4 mb-4">Розовые мечты</h1>
+        <p class="lead mb-4">Нежные бутоны, бархатные лепестки и волшебный аромат. Каждая роза — это история любви, застывшая в лепестках.</p>
+        
+        <!-- Отображение данных из кук -->
+        <div class="alert alert-light mb-4 mx-auto" style="max-width: 600px;">
+            <h5>👋 Привет, <%= userName %>!</h5>
+            <p class="mb-1"><%= greeting %></p>
+            <p class="mb-0">
+                <small class="text-muted">
+                    Вы посещали нас: <strong><%= visitCount %></strong> раз<br>
+                    Последний визит: <strong><%= lastVisit %></strong>
+                </small>
+            </p>
+        </div>
+        
+        <!-- Форма для установки имени -->
+        <div class="card mx-auto mb-4" style="max-width: 500px;">
+            <div class="card-body">
+                <h5 class="card-title">Представьтесь</h5>
+                <form action="/set-name" method="POST" class="row g-2">
+                    <div class="col">
+                        <input type="text" class="form-control" name="userName" 
+                               placeholder="Введите ваше имя" value="<%= userName %>">
                     </div>
-                    <h3 class="card-title mb-3"><%= category.name %></h3>
-                    <p class="card-text text-muted mb-4"><%= category.description %></p>
-                    <div class="badge bg-light text-dark mb-4 p-2">
-                        <i class="fas fa-box"></i> Товаров: <%= category.count %>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-check"></i> Сохранить
+                        </button>
                     </div>
-                    <a href="<%= category.url %>" class="btn btn-primary btn-lg w-100">
-                        <i class="fas fa-arrow-right me-2"></i>Перейти
-                    </a>
-                </div>
+                </form>
+                <p class="text-muted mt-2 mb-0"><small>Имя будет сохранено на год</small></p>
             </div>
         </div>
-        <% }) %>
-    </div>
-
-    <div class="text-center mt-5">
-        <a href="/" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-2"></i>Вернуться на главную
-        </a>
+        
+        <div class="mt-4">
+            <a href="/categories" class="btn btn-primary btn-lg me-3">
+                <i class="fas fa-shopping-cart"></i> Начать покупки
+            </a>
+            <a href="/clear-cookies" class="btn btn-outline-secondary btn-lg" 
+               onclick="return confirm('Очистить все куки?')">
+                <i class="fas fa-cookie-bite"></i> Очистить куки
+            </a>
+        </div>
     </div>
 </section>
 
-<!-- Преимущества -->
+<!-- Секция "Наши розы" -->
+<section class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="mb-3">Наши розы</h2>
+        <p class="text-muted">Выберите свою идеальную розу из нашей коллекции</p>
+    </div>
+
+    <div class="row">
+        <!-- Карточка 1 -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header text-center bg-light">
+                    <h4 class="mb-0 text-primary">Любовь</h4>
+                </div>
+                <div class="card-body text-center">
+                    <i class="fas fa-heart fa-3x text-danger mb-3"></i>
+                    <h5 class="card-title">Алая страсть</h5>
+                    <p class="card-text">Классическая красная роза с бархатными лепестками. Символ вечной любви и преданности.</p>
+                </div>
+                <div class="card-footer bg-white text-center">
+                    <span class="price-old me-2">750 ₽</span>
+                    <span class="price-new">650 ₽</span>
+                    <button class="btn btn-primary btn-sm mt-2 w-100">
+                        <i class="fas fa-cart-plus"></i> В корзину
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Карточка 2 -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header text-center bg-light">
+                    <h4 class="mb-0 text-primary">Нежность</h4>
+                </div>
+                <div class="card-body text-center">
+                    <i class="fas fa-star fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title">Розовая мечта</h5>
+                    <p class="card-text">Нежно-розовые бутоны с тонким ароматом. Идеально для первого свидания.</p>
+                </div>
+                <div class="card-footer bg-white text-center">
+                    <span class="price-old me-2">700 ₽</span>
+                    <span class="price-new">550 ₽</span>
+                    <button class="btn btn-primary btn-sm mt-2 w-100">
+                        <i class="fas fa-cart-plus"></i> В корзину
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Карточка 3 -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header text-center bg-light">
+                    <h4 class="mb-0 text-primary">Элегантность</h4>
+                </div>
+                <div class="card-body text-center">
+                    <i class="fas fa-crown fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">Белая королева</h5>
+                    <p class="card-text">Белоснежные лепестки с изысканной формой. Символ чистоты и элегантности.</p>
+                </div>
+                <div class="card-footer bg-white text-center">
+                    <span class="price-old me-2">800 ₽</span>
+                    <span class="price-new">700 ₽</span>
+                    <button class="btn btn-primary btn-sm mt-2 w-100">
+                        <i class="fas fa-cart-plus"></i> В корзину
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Инфо секция -->
 <section class="bg-light py-5 mt-5">
     <div class="container">
-        <div class="row text-center">
-            <div class="col-md-4 mb-4">
+        <div class="row">
+            <div class="col-md-4 text-center mb-4">
                 <i class="fas fa-shipping-fast fa-2x text-primary mb-3"></i>
-                <h5>Бесплатная доставка</h5>
-                <p class="text-muted">При заказе от 3000 ₽</p>
+                <h5>Быстрая доставка</h5>
+                <p>Доставка по Москве в течение 2 часов</p>
             </div>
-            <div class="col-md-4 mb-4">
-                <i class="fas fa-leaf fa-2x text-primary mb-3"></i>
+            <div class="col-md-4 text-center mb-4">
+                <i class="fas fa-award fa-2x text-primary mb-3"></i>
                 <h5>Свежие цветы</h5>
-                <p class="text-muted">Прямые поставки от фермеров</p>
+                <p>Только свежие цветы от проверенных поставщиков</p>
             </div>
-            <div class="col-md-4 mb-4">
-                <i class="fas fa-heart fa-2x text-primary mb-3"></i>
-                <h5>Индивидуальный подход</h5>
-                <p class="text-muted">Составим букет по вашим пожеланиям</p>
+            <div class="col-md-4 text-center mb-4">
+                <i class="fas fa-headset fa-2x text-primary mb-3"></i>
+                <h5>Поддержка 24/7</h5>
+                <p>Консультации флористов круглосуточно</p>
             </div>
         </div>
     </div>

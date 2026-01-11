@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var expressLayouts = require('express-ejs-layouts');
 var mongoose = require('mongoose');
-var session = require('express-session'); // ← ДОБАВЬТЕ ЭТУ СТРОКУ
+var session = require('express-session');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -21,14 +21,14 @@ try {
   console.error('❌ Ошибка подключения к MongoDB:', err.message);
 }
 
-// НАСТРОЙКА СЕССИЙ ← ДОБАВЬТЕ ЭТОТ БЛОК
+// НАСТРОЙКА СЕССИЙ
 app.use(session({
-  secret: 'rose-shop-secret-key-2024', // Секретный ключ для подписи cookie
-  resave: false, // Не сохранять сессию если не было изменений
-  saveUninitialized: true, // Сохранять неинициализированные сессии
+  secret: 'rose-shop-secret-key-2024',
+  resave: false,
+  saveUninitialized: true,
   cookie: { 
-    secure: false, // true если используете HTTPS
-    maxAge: 1000 * 60 * 60 * 24 // Время жизни cookie: 24 часа
+    secure: false,
+    maxAge: 1000 * 60 * 60 * 24
   }
 }));
 
@@ -59,7 +59,6 @@ app.use('/categories', categoriesRouter);
 
 // Тестовый маршрут для проверки сессии
 app.get('/session-test', (req, res) => {
-  // Увеличиваем счетчик посещений
   if (!req.session.visitCount) {
     req.session.visitCount = 0;
   }
@@ -71,6 +70,37 @@ app.get('/session-test', (req, res) => {
     <p>Количество посещений этой страницы: ${req.session.visitCount}</p>
     <p><a href="/">На главную</a></p>
   `);
+});
+
+// ТЕСТОВЫЙ МАРШРУТ ДЛЯ ПРОВЕРКИ КУК ← ДОБАВЛЕНО
+app.get('/cookies-test', (req, res) => {
+    res.json({
+        cookies: req.cookies,
+        headers: req.headers.cookie,
+        sessionID: req.sessionID,
+        session: req.session
+    });
+});
+
+// Маршрут для установки тестовой куки ← ДОБАВЛЕНО
+app.get('/set-test-cookie', (req, res) => {
+    res.cookie('testCookie', 'Это тестовая кука от цветочного магазина', {
+        maxAge: 1000 * 60 * 60 * 24, // 24 часа
+        httpOnly: true
+    });
+    res.cookie('flowerShop', 'Роза', {
+        maxAge: 1000 * 60 * 60 * 24 * 7 // 7 дней
+    });
+    res.send(`
+        <h1>Куки установлены!</h1>
+        <p>Были установлены тестовые куки:</p>
+        <ul>
+            <li>testCookie = "Это тестовая кука от цветочного магазина"</li>
+            <li>flowerShop = "Роза"</li>
+        </ul>
+        <p><a href="/cookies-test">Посмотреть все куки</a></p>
+        <p><a href="/">На главную</a></p>
+    `);
 });
 
 // catch 404 and forward to error handler
@@ -91,6 +121,10 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`🚀 Сервер запущен на http://localhost:${PORT}`);
   console.log(`✅ Сессии настроены с ключом: rose-shop-secret-key-2024`);
+  console.log(`🔧 Тестовые маршруты:`);
+  console.log(`   - http://localhost:${PORT}/session-test - проверка сессий`);
+  console.log(`   - http://localhost:${PORT}/cookies-test - проверка кук`);
+  console.log(`   - http://localhost:${PORT}/set-test-cookie - установка тестовых кук`);
 });
 
 module.exports = app;
