@@ -14,9 +14,9 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// Использование EJS layouts
+// Использование EJS layouts и указание пути к layout файлу
 app.use(expressLayouts);
-app.set('layout', 'layout'); // основной layout файл
+app.set('layout', 'layout/page');  // <-- ЭТУ СТРОКУ ДОБАВИТЬ!
 
 app.use(logger('dev'));
 app.use(express.json());
