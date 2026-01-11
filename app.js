@@ -70,5 +70,4 @@ app.listen(PORT, () => {
   console.log(`🚀 Сервер запущен на http://localhost:${PORT}`);
 });
 
-// НЕ ЗАБЫВАЙТЕ ЭКСПОРТ
 module.exports = app;
