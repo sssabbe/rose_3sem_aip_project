@@ -18,7 +18,7 @@ try {
     console.log('⚠️ MongoDB не подключена');
 }
 
-// 🆗 СПОСОБ 1: Для новых версий connect-mongo (v4+)
+// 🆗 НАСТРОЙКА СЕССИЙ
 try {
     var MongoStore = require('connect-mongo');
     
@@ -68,21 +68,6 @@ try {
     }
 }
 
-// 🆕 СЧЁТЧИК ПОСЕЩЕНИЙ СТРАНИЦ
-app.use(function(req, res, next) {
-    // Увеличиваем счётчик на 1 при каждом запросе
-    req.session.counter = (req.session.counter || 0) + 1;
-    
-    // Также сохраняем время последнего запроса
-    req.session.lastRequest = new Date().toLocaleString('ru-RU');
-    
-    // Передаём в шаблоны
-    res.locals.sessionCounter = req.session.counter;
-    res.locals.lastRequest = req.session.lastRequest;
-    
-    next();
-});
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -93,7 +78,36 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// РОУТЫ
+// ========================
+// 🔧 ВАШИ MIDDLEWARE
+// ========================
+
+// 🆕 СЧЁТЧИК ПОСЕЩЕНИЙ СТРАНИЦ
+app.use(function(req, res, next) {
+    // Увеличиваем счётчик на 1 при каждом запросе
+    req.session.counter = (req.session.counter || 0) + 1;
+    
+    // Также сохраняем время последнего запроса
+    req.session.lastRequest = new Date().toLocaleString('ru-RU');
+    
+    next();
+});
+
+// 🆕 ДАННЫЕ СЕССИИ ДЛЯ ШАБЛОНОВ
+app.use(require('./middlewares/sessionData.js'));
+
+// 🆕 МЕНЮ НАВИГАЦИИ
+app.use(require('./middlewares/createMenu.js'));
+
+// 🆕 ОБРАБОТКА КОРЗИНЫ
+app.use(require('./middlewares/cartMiddleware.js'));
+
+// 🆕 ОСНОВНЫЕ ДАННЫЕ МАГАЗИНА
+app.use(require('./middlewares/shopData.js'));
+
+// ========================
+// 📌 РОУТЫ
+// ========================
 app.use('/', indexRouter);
 
 // Маршрут для просмотра данных сессии
@@ -114,6 +128,23 @@ app.get('/counter-test', (req, res) => {
         <p>Обнови страницу - счётчик увеличится!</p>
         <p><a href="/">На главную</a></p>
         <p><a href="/session-info">Посмотреть все данные сессии (JSON)</a></p>
+    `);
+});
+
+// Маршрут для теста middleware
+app.get('/test-middleware', (req, res) => {
+    res.send(`
+        <h1>Тест middleware</h1>
+        <h2>Доступные переменные:</h2>
+        <ul>
+            <li>sessionID: ${res.locals.sessionID}</li>
+            <li>sessionCounter: ${res.locals.sessionCounter}</li>
+            <li>lastRequest: ${res.locals.lastRequest}</li>
+            <li>cartItemCount: ${res.locals.cartItemCount}</li>
+            <li>userName: ${res.locals.userName}</li>
+            <li>shopInfo.name: ${res.locals.shopInfo ? res.locals.shopInfo.name : 'нет'}</li>
+        </ul>
+        <p><a href="/">На главную</a></p>
     `);
 });
 
@@ -141,8 +172,10 @@ app.listen(PORT, () => {
     console.log(`👉 http://localhost:${PORT}`);
     console.log(`👉 http://localhost:${PORT}/counter-test - тест счётчика`);
     console.log(`👉 http://localhost:${PORT}/session-info - данные сессии`);
+    console.log(`👉 http://localhost:${PORT}/test-middleware - тест middleware`);
     console.log(`\n📊 Сессии обновляются каждые 60 секунд`);
     console.log(`🎯 Счётчик увеличивается при каждом запросе`);
+    console.log(`🔧 Подключены middleware: sessionData, createMenu, cartMiddleware, shopData`);
 });
 
 module.exports = app;
