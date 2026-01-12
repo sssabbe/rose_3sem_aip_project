@@ -1,25 +1,29 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middlewares/authMiddleware');
+const authMiddleware = require('../middlewares/authMiddleware');
 
-// Защищенные маршруты
-router.get('/profile', auth.isAuthenticated, function(req, res) {
-    res.render('protected/profile', {
+// Все маршруты в этом файле требуют авторизации
+router.use(authMiddleware.isAuthenticated);
+
+// Личный кабинет
+router.get('/profile', function(req, res) {
+    res.render('profile', {
         title: 'Личный кабинет',
         user: req.session.user
     });
 });
 
-router.get('/orders', auth.isAuthenticated, function(req, res) {
-    res.render('protected/orders', {
-        title: 'Мои заказы'
-    });
+// Изменение профиля
+router.post('/profile/update', function(req, res) {
+    // Логика обновления профиля
+    req.flash('success', 'Профиль успешно обновлен');
+    res.redirect('/protected/profile');
 });
 
-// Админские маршруты
-router.get('/admin/dashboard', auth.isAdmin, function(req, res) {
+// Страница только для администраторов
+router.get('/admin', authMiddleware.isAdmin, function(req, res) {
     res.render('admin/dashboard', {
-        title: 'Панель администратора'
+        title: 'Административная панель'
     });
 });
 

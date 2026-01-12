@@ -1,11 +1,21 @@
 var express = require('express');
 var router = express.Router();
-var User = require('../models/user');
+var User = require('../models/user').User;
+
+// Импортируем middleware
+const authMiddleware = require('../middlewares/authMiddleware');
 
 // GET /auth/login - страница входа
 router.get('/login', function(req, res, next) {
+    // Если уже авторизован - редирект на главную
+    if (req.session.userId) {
+        req.flash('info', 'Вы уже вошли в систему');
+        return res.redirect('/');
+    }
+    
     res.render('auth/login', {
         title: 'Вход в систему'
+        // flash сообщения уже в res.locals благодаря middleware
     });
 });
 
@@ -15,14 +25,14 @@ router.post('/login', async function(req, res, next) {
         // Получаем данные из формы
         var username = req.body.username;
         var password = req.body.password;
+        var remember = req.body.remember;
         
-        console.log('📨 Получены данные формы:');
-        console.log('- Имя пользователя:', username);
-        console.log('- Пароль:', password);
+        console.log('📨 Попытка входа:', username);
         
         // Проверяем, что поля не пустые
         if (!username || !password) {
             req.flash('error', 'Пожалуйста, заполните все поля');
+            req.session.rememberUsername = username;
             return res.redirect('/auth/login');
         }
         
@@ -31,18 +41,23 @@ router.post('/login', async function(req, res, next) {
         
         if (!user) {
             req.flash('error', 'Пользователь не найден');
+            req.session.rememberUsername = username;
+            console.log('❌ Пользователь не найден:', username);
             return res.redirect('/auth/login');
         }
         
         // Проверяем пароль
         if (!user.checkPassword(password)) {
             req.flash('error', 'Неверный пароль');
+            req.session.rememberUsername = username;
+            console.log('❌ Неверный пароль для:', username);
             return res.redirect('/auth/login');
         }
         
         // Проверяем, активен ли пользователь
         if (!user.isActive) {
             req.flash('error', 'Учетная запись деактивирована');
+            req.session.rememberUsername = username;
             return res.redirect('/auth/login');
         }
         
@@ -58,26 +73,48 @@ router.post('/login', async function(req, res, next) {
             role: user.role
         };
         
+        // Запоминаем логин в куках, если выбрано "запомнить меня"
+        if (remember) {
+            res.cookie('rememberedUser', username, {
+                maxAge: 30 * 24 * 60 * 60 * 1000,
+                httpOnly: true
+            });
+        } else {
+            res.clearCookie('rememberedUser');
+        }
+        
         // Обновляем время последнего входа
         await user.updateLastLogin();
         
         console.log('✅ Успешный вход пользователя:', user.username);
         
-        // Перенаправляем на главную страницу
-        req.flash('success', `Добро пожаловать, ${user.fullName}!`);
-        res.redirect('/');
+        // Успешное сообщение
+        req.flash('success', `Добро пожаловать, ${user.fullName || user.username}!`);
+        
+        // Редирект на сохраненный URL или на главную
+        const returnTo = req.session.returnTo || '/';
+        delete req.session.returnTo;
+        
+        res.redirect(returnTo);
         
     } catch (err) {
         console.error('❌ Ошибка при входе:', err);
-        req.flash('error', 'Ошибка сервера при входе');
+        req.flash('error', 'Ошибка сервера при входе. Попробуйте позже.');
         res.redirect('/auth/login');
     }
 });
 
 // GET /auth/register - страница регистрации
 router.get('/register', function(req, res, next) {
+    // Если уже авторизован - редирект на главную
+    if (req.session.userId) {
+        req.flash('info', 'Вы уже зарегистрированы и вошли в систему');
+        return res.redirect('/');
+    }
+    
     res.render('auth/register', {
         title: 'Регистрация'
+        // flash сообщения уже в res.locals
     });
 });
 
@@ -91,13 +128,9 @@ router.post('/register', async function(req, res, next) {
         var confirmPassword = req.body.confirmPassword;
         var fullName = req.body.fullName;
         var phone = req.body.phone;
+        var terms = req.body.terms;
         
-        console.log('📨 Получены данные регистрации:');
-        console.log('- Имя пользователя:', username);
-        console.log('- Email:', email);
-        console.log('- Пароль:', password ? '***' : 'не указан');
-        console.log('- Полное имя:', fullName);
-        console.log('- Телефон:', phone);
+        console.log('📨 Попытка регистрации:', username, email);
         
         // Валидация данных
         if (!username || !password || !email) {
@@ -112,6 +145,18 @@ router.post('/register', async function(req, res, next) {
         
         if (password.length < 6) {
             req.flash('error', 'Пароль должен содержать минимум 6 символов');
+            return res.redirect('/auth/register');
+        }
+        
+        if (!terms) {
+            req.flash('error', 'Необходимо согласиться с условиями использования');
+            return res.redirect('/auth/register');
+        }
+        
+        // Проверяем email на валидность
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            req.flash('error', 'Пожалуйста, введите корректный email адрес');
             return res.redirect('/auth/register');
         }
         
@@ -139,7 +184,8 @@ router.post('/register', async function(req, res, next) {
             password: password,
             fullName: fullName || username,
             phone: phone,
-            role: 'user'
+            role: 'user',
+            isActive: true
         });
         
         await newUser.save();
@@ -180,18 +226,13 @@ router.get('/logout', function(req, res, next) {
         }
         
         console.log('✅ Пользователь вышел из системы:', username);
-        req.flash('info', 'Вы успешно вышли из системы');
+        req.flash('success', 'Вы успешно вышли из системы');
         res.redirect('/');
     });
 });
 
-// GET /auth/profile - личный кабинет (только для авторизованных)
-router.get('/profile', function(req, res, next) {
-    if (!req.session.userId) {
-        req.flash('error', 'Для доступа к этой странице необходимо войти в систему');
-        return res.redirect('/auth/login');
-    }
-    
+// GET /auth/profile - личный кабинет (используем middleware)
+router.get('/profile', authMiddleware.isAuthenticated, function(req, res, next) {
     res.render('auth/profile', {
         title: 'Личный кабинет',
         user: req.session.user

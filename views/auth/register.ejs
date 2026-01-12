@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация | Flowers by Sabi</title>
+    <title><%= title %> | Flowers by Sabi</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -25,12 +25,6 @@
             background: linear-gradient(135deg, #20c997 0%, #198754 100%);
             color: white;
             border-radius: 15px 15px 0 0;
-        }
-        
-        .password-strength {
-            height: 5px;
-            width: 0;
-            transition: width 0.3s, background-color 0.3s;
         }
     </style>
 </head>
@@ -55,17 +49,19 @@
                     </div>
                     <div class="card-body p-4">
                         
-                        <!-- Flash сообщения -->
-                        <% if (error && error.length > 0) { %>
-                            <div class="alert alert-danger alert-dismissible fade show">
-                                <%= error %>
+                        <!-- Сообщение об успехе -->
+                        <% if (success && success.length > 0) { %>
+                            <div class="alert alert-success alert-dismissible fade show">
+                                <%= success %>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         <% } %>
                         
-                        <% if (success && success.length > 0) { %>
-                            <div class="alert alert-success alert-dismissible fade show">
-                                <%= success %>
+                        <!-- Сообщение об ошибке -->
+                        <% if (error && error.length > 0) { %>
+                            <div class="alert alert-danger alert-dismissible fade show">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <%= error %>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         <% } %>
@@ -79,7 +75,7 @@
                                     </label>
                                     <input type="text" class="form-control" id="username" name="username" 
                                            placeholder="От 3 до 30 символов" required minlength="3" maxlength="30"
-                                           value="<%= typeof username !== 'undefined' ? username : '' %>">
+                                           value="<%= formData.username || '' %>">
                                     <small class="form-text text-muted">Будет использоваться для входа</small>
                                 </div>
                                 
@@ -89,7 +85,7 @@
                                     </label>
                                     <input type="email" class="form-control" id="email" name="email" 
                                            placeholder="example@mail.com" required
-                                           value="<%= typeof email !== 'undefined' ? email : '' %>">
+                                           value="<%= formData.email || '' %>">
                                 </div>
                             </div>
                             
@@ -100,7 +96,7 @@
                                     </label>
                                     <input type="text" class="form-control" id="fullName" name="fullName" 
                                            placeholder="Иван Иванов"
-                                           value="<%= typeof fullName !== 'undefined' ? fullName : '' %>">
+                                           value="<%= formData.fullName || '' %>">
                                 </div>
                                 
                                 <div class="col-md-6 mb-3">
@@ -109,7 +105,7 @@
                                     </label>
                                     <input type="tel" class="form-control" id="phone" name="phone" 
                                            placeholder="+7 (999) 123-45-67"
-                                           value="<%= typeof phone !== 'undefined' ? phone : '' %>">
+                                           value="<%= formData.phone || '' %>">
                                 </div>
                             </div>
                             
@@ -120,10 +116,6 @@
                                     </label>
                                     <input type="password" class="form-control" id="password" name="password" 
                                            placeholder="Минимум 6 символов" required minlength="6">
-                                    <div class="mt-2">
-                                        <small>Надежность пароля:</small>
-                                        <div class="password-strength" id="passwordStrength"></div>
-                                    </div>
                                 </div>
                                 
                                 <div class="col-md-6 mb-3">
@@ -132,9 +124,6 @@
                                     </label>
                                     <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" 
                                            placeholder="Повторите пароль" required minlength="6">
-                                    <div class="mt-2">
-                                        <small id="passwordMatch" class="text-muted"></small>
-                                    </div>
                                 </div>
                             </div>
                             
@@ -176,124 +165,31 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const password = document.getElementById('password');
-            const confirmPassword = document.getElementById('confirmPassword');
-            const passwordStrength = document.getElementById('passwordStrength');
-            const passwordMatch = document.getElementById('passwordMatch');
-            const form = document.getElementById('registerForm');
+        // Простая валидация формы
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
             
-            // Проверка сложности пароля
-            password.addEventListener('input', function() {
-                const pass = password.value;
-                let strength = 0;
-                let color = '#dc3545'; // красный
-                
-                if (pass.length >= 6) strength += 25;
-                if (pass.length >= 8) strength += 25;
-                if (/[A-Z]/.test(pass)) strength += 25;
-                if (/[0-9]/.test(pass)) strength += 25;
-                if (/[^A-Za-z0-9]/.test(pass)) strength += 25;
-                
-                // Ограничиваем максимум 100%
-                strength = Math.min(strength, 100);
-                
-                // Определяем цвет
-                if (strength < 50) {
-                    color = '#dc3545'; // красный
-                } else if (strength < 75) {
-                    color = '#ffc107'; // желтый
-                } else {
-                    color = '#28a745'; // зеленый
-                }
-                
-                // Обновляем индикатор
-                passwordStrength.style.width = strength + '%';
-                passwordStrength.style.backgroundColor = color;
-                
-                // Обновляем текст
-                let text = 'Слабый';
-                if (strength >= 75) text = 'Сильный';
-                else if (strength >= 50) text = 'Средний';
-                
-                passwordStrength.parentElement.querySelector('small').textContent = 
-                    'Надежность пароля: ' + text + ' (' + strength + '%)';
-            });
-            
-            // Проверка совпадения паролей
-            function checkPasswordMatch() {
-                if (!password.value || !confirmPassword.value) {
-                    passwordMatch.textContent = '';
-                    return;
-                }
-                
-                if (password.value === confirmPassword.value) {
-                    passwordMatch.textContent = '✓ Пароли совпадают';
-                    passwordMatch.className = 'text-success';
-                } else {
-                    passwordMatch.textContent = '✗ Пароли не совпадают';
-                    passwordMatch.className = 'text-danger';
-                }
+            if (password !== confirmPassword) {
+                event.preventDefault();
+                alert('Пароли не совпадают');
+                return false;
             }
             
-            password.addEventListener('input', checkPasswordMatch);
-            confirmPassword.addEventListener('input', checkPasswordMatch);
+            if (password.length < 6) {
+                event.preventDefault();
+                alert('Пароль должен содержать минимум 6 символов');
+                return false;
+            }
             
-            // Валидация формы
-            form.addEventListener('submit', function(event) {
-                const username = document.getElementById('username').value.trim();
-                const email = document.getElementById('email').value.trim();
-                const passwordVal = password.value.trim();
-                const confirmPasswordVal = confirmPassword.value.trim();
-                const terms = document.getElementById('terms').checked;
-                
-                // Проверка обязательных полей
-                const requiredFields = [
-                    { field: username, name: 'Имя пользователя' },
-                    { field: email, name: 'Email' },
-                    { field: passwordVal, name: 'Пароль' },
-                    { field: confirmPasswordVal, name: 'Подтверждение пароля' }
-                ];
-                
-                for (const field of requiredFields) {
-                    if (!field.field) {
-                        event.preventDefault();
-                        alert('Пожалуйста, заполните поле: ' + field.name);
-                        return false;
-                    }
-                }
-                
-                // Проверка email
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(email)) {
-                    event.preventDefault();
-                    alert('Пожалуйста, введите корректный email адрес');
-                    return false;
-                }
-                
-                // Проверка пароля
-                if (passwordVal.length < 6) {
-                    event.preventDefault();
-                    alert('Пароль должен содержать минимум 6 символов');
-                    return false;
-                }
-                
-                // Проверка совпадения паролей
-                if (passwordVal !== confirmPasswordVal) {
-                    event.preventDefault();
-                    alert('Пароли не совпадают');
-                    return false;
-                }
-                
-                // Проверка согласия с условиями
-                if (!terms) {
-                    event.preventDefault();
-                    alert('Необходимо согласиться с условиями использования');
-                    return false;
-                }
-                
-                return true;
-            });
+            if (!terms) {
+                event.preventDefault();
+                alert('Необходимо согласиться с условиями использования');
+                return false;
+            }
+            
+            return true;
         });
     </script>
 </body>
