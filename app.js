@@ -9,27 +9,79 @@ var indexRouter = require('./routes/index');
 
 var app = express();
 
-// Подключение к MongoDB (БЕЗ ОШИБОК если нет MongoDB)
+// ПОДКЛЮЧЕНИЕ К MONGODB
 try {
     var mongoose = require('mongoose');
-    mongoose.connect('mongodb://localhost/flowerShop2024', {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    });
+    mongoose.connect('mongodb://localhost/flowerShop2024');
     console.log('✅ MongoDB подключена');
 } catch (err) {
-    console.log('⚠️ MongoDB не подключена, но сервер работает');
+    console.log('⚠️ MongoDB не подключена');
 }
 
-// УПРОЩЕННАЯ НАСТРОЙКА СЕССИЙ (работает БЕЗ MongoDB)
-app.use(session({
-    secret: 'rose-shop-secret-key',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { 
-        maxAge: 1000 * 60 * 60 * 24 // 24 часа
+// 🆗 СПОСОБ 1: Для новых версий connect-mongo (v4+)
+try {
+    var MongoStore = require('connect-mongo');
+    
+    // НАСТРОЙКА СЕССИЙ
+    app.use(session({
+        secret: 'ThreeCats',
+        cookie: { maxAge: 60 * 1000 }, // 60 секунд
+        proxy: true,
+        resave: true,
+        saveUninitialized: true,
+        store: MongoStore.create({  // Для connect-mongo v4+
+            mongoUrl: 'mongodb://localhost/flowerShop2024',
+            ttl: 60 // 60 секунд
+        })
+    }));
+    console.log('✅ Используется connect-mongo v4+');
+    
+} catch (err) {
+    // 🆗 СПОСОБ 2: Для старых версий connect-mongo (v3)
+    try {
+        var MongoStore = require('connect-mongo')(session);
+        
+        app.use(session({
+            secret: 'ThreeCats',
+            cookie: { maxAge: 60 * 1000 },
+            proxy: true,
+            resave: true,
+            saveUninitialized: true,
+            store: new MongoStore({  // Для connect-mongo v3
+                url: 'mongodb://localhost/flowerShop2024',
+                ttl: 60
+            })
+        }));
+        console.log('✅ Используется connect-mongo v3');
+        
+    } catch (err2) {
+        // 🆗 СПОСОБ 3: Без MongoDB (в памяти)
+        app.use(session({
+            secret: 'ThreeCats',
+            cookie: { maxAge: 60 * 1000 },
+            proxy: true,
+            resave: true,
+            saveUninitialized: true
+            // store не указываем - сессии в памяти
+        }));
+        console.log('✅ Используется хранение сессий в памяти');
     }
-}));
+}
+
+// 🆕 СЧЁТЧИК ПОСЕЩЕНИЙ СТРАНИЦ
+app.use(function(req, res, next) {
+    // Увеличиваем счётчик на 1 при каждом запросе
+    req.session.counter = (req.session.counter || 0) + 1;
+    
+    // Также сохраняем время последнего запроса
+    req.session.lastRequest = new Date().toLocaleString('ru-RU');
+    
+    // Передаём в шаблоны
+    res.locals.sessionCounter = req.session.counter;
+    res.locals.lastRequest = req.session.lastRequest;
+    
+    next();
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -41,14 +93,29 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Middleware для передачи данных сессии в шаблоны
-app.use(function(req, res, next) {
-    res.locals.user = req.session.user || null;
-    next();
-});
-
 // РОУТЫ
 app.use('/', indexRouter);
+
+// Маршрут для просмотра данных сессии
+app.get('/session-info', (req, res) => {
+    res.json({
+        sessionID: req.sessionID,
+        counter: req.session.counter || 0,
+        lastRequest: req.session.lastRequest || 'никогда',
+        sessionData: req.session
+    });
+});
+
+// Маршрут для теста счётчика
+app.get('/counter-test', (req, res) => {
+    res.send(`
+        <h1>Тест счётчика сессии</h1>
+        <p>Текущее значение счётчика: <strong>${req.session.counter || 0}</strong></p>
+        <p>Обнови страницу - счётчик увеличится!</p>
+        <p><a href="/">На главную</a></p>
+        <p><a href="/session-info">Посмотреть все данные сессии (JSON)</a></p>
+    `);
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -63,16 +130,19 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', { 
         title: 'Ошибка',
-        message: err.message,
-        error: err
+        message: err.message
     });
 });
 
 // Запуск сервера
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-    console.log(`🚀 Сервер запущен на http://localhost:${PORT}`);
-    console.log(`🌹 Магазин цветов работает!`);
+    console.log(`\n🚀 СЕРВЕР ЗАПУЩЕН!`);
+    console.log(`👉 http://localhost:${PORT}`);
+    console.log(`👉 http://localhost:${PORT}/counter-test - тест счётчика`);
+    console.log(`👉 http://localhost:${PORT}/session-info - данные сессии`);
+    console.log(`\n📊 Сессии обновляются каждые 60 секунд`);
+    console.log(`🎯 Счётчик увеличивается при каждом запросе`);
 });
 
 module.exports = app;

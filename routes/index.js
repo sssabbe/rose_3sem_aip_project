@@ -85,13 +85,17 @@ router.get('/', function(req, res, next) {
         };
     }
     
-    // Рендерим страницу
+    // Рендерим страницу с ВСЕМИ переменными для сессии
     res.render('index', { 
         title: 'Магазин цветов "Роза"',
         visitCount: visitCount,
         lastVisit: lastVisit,
         userName: userName,
-        sessionVisitCount: req.session.visitCount,
+        // Переменные для блока информации о сессии
+        sessionID: req.sessionID, // ← ВАЖНО: добавляем sessionID
+        sessionCounter: req.session.visitCount, // ← счетчик сессии
+        lastRequest: req.session.lastVisit, // ← последний запрос
+        // Другие переменные
         firstVisit: req.session.firstVisit,
         cart: req.session.cart,
         roses: rosesCatalog,
