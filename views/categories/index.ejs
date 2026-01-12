@@ -1,145 +1,982 @@
 <!-- views/index.ejs -->
+<!-- Главная страница Flowers by Sabi -->
+
 <!-- Герой-секция -->
-<section class="hero-section text-center">
+<section class="sabi-hero-section">
     <div class="container">
-        <h1 class="display-4 mb-4">Розовые мечты</h1>
-        <p class="lead mb-4">Нежные бутоны, бархатные лепестки и волшебный аромат. Каждая роза — это история любви, застывшая в лепестках.</p>
-        
-        <!-- Отображение данных из кук -->
-        <div class="alert alert-light mb-4 mx-auto" style="max-width: 600px;">
-            <h5>👋 Привет, <%= userName %>!</h5>
-            <p class="mb-1"><%= greeting %></p>
-            <p class="mb-0">
-                <small class="text-muted">
-                    Вы посещали нас: <strong><%= visitCount %></strong> раз<br>
-                    Последний визит: <strong><%= lastVisit %></strong>
-                </small>
+        <div class="sabi-hero-content">
+            <!-- Декоративные элементы -->
+            <div class="sabi-hero-decoration">
+                <span class="deco-1">🌹</span>
+                <span class="deco-2">🌸</span>
+                <span class="deco-3">🌺</span>
+                <span class="deco-4">🌷</span>
+                <span class="deco-5">💐</span>
+            </div>
+            
+            <!-- Основной контент -->
+            <div class="sabi-hero-text">
+                <h1 class="sabi-hero-title">
+                    <i class="fas fa-rose"></i> Flowers by Sabi
+                </h1>
+                <p class="sabi-hero-subtitle">
+                    Нежные цветы для ваших особенных моментов
+                </p>
+                <p class="sabi-hero-description">
+                    Каждый цветок — это история любви, застывшая в лепестках. 
+                    Подарите себе или близким волшебство природы.
+                </p>
+                
+                <!-- Кнопки призыва к действию -->
+                <div class="sabi-hero-actions">
+                    <a href="/categories" class="sabi-btn sabi-btn-hero">
+                        <i class="fas fa-shopping-cart me-2"></i> Начать покупки
+                    </a>
+                    <a href="#categories" class="sabi-btn sabi-btn-hero-outline">
+                        <i class="fas fa-eye me-2"></i> Посмотреть коллекцию
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Приветствие пользователя -->
+            <div class="sabi-user-greeting">
+                <div class="greeting-card">
+                    <div class="greeting-header">
+                        <i class="fas fa-user-circle"></i>
+                        <h5>Добро пожаловать, <%= userName || 'дорогой гость' %>!</h5>
+                    </div>
+                    <div class="greeting-body">
+                        <p class="greeting-text"><%= greeting %></p>
+                        <div class="greeting-stats">
+                            <div class="stat-item">
+                                <i class="fas fa-history"></i>
+                                <span>Вы посещали нас: <strong><%= visitCount %></strong> раз</span>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Последний визит: <strong><%= lastVisit %></strong></span>
+                            </div>
+                        </div>
+                        
+                        <!-- Форма для установки имени -->
+                        <form action="/set-name" method="POST" class="greeting-form">
+                            <div class="input-group">
+                                <input type="text" 
+                                       class="form-control sabi-form-control" 
+                                       name="userName" 
+                                       placeholder="Как к вам обращаться?"
+                                       value="<%= userName || '' %>"
+                                       required>
+                                <button type="submit" class="btn sabi-btn">
+                                    <i class="fas fa-user-check"></i>
+                                </button>
+                            </div>
+                            <small class="form-text">Имя будет сохранено для персонализации</small>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Секция преимуществ -->
+<section class="sabi-benefits-section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3 col-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <h5>Быстрая доставка</h5>
+                    <p>По Москве за 2 часа, даже в праздники</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h5>Свежие цветы</h5>
+                    <p>Ежедневные поставки от лучших плантаций</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h5>Премиум качество</h5>
+                    <p>Отборные цветы с гарантией свежести</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="benefit-card">
+                    <div class="benefit-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h5>Поддержка 24/7</h5>
+                    <p>Флористы помогут с выбором</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Секция категорий -->
+<section id="categories" class="sabi-categories-section">
+    <div class="container">
+        <div class="sabi-section-header">
+            <h2 class="sabi-section-title">
+                <i class="fas fa-gem"></i> Наши коллекции
+            </h2>
+            <p class="sabi-section-subtitle">
+                Выберите идеальный подарок из наших категорий
             </p>
         </div>
-        
-        <!-- Форма для установки имени -->
-        <div class="card mx-auto mb-4" style="max-width: 500px;">
-            <div class="card-body">
-                <h5 class="card-title">Представьтесь</h5>
-                <form action="/set-name" method="POST" class="row g-2">
-                    <div class="col">
-                        <input type="text" class="form-control" name="userName" 
-                               placeholder="Введите ваше имя" value="<%= userName %>">
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            <!-- Категория 1: Букеты -->
+            <div class="col">
+                <a href="/categories/bouquets" class="sabi-category-card">
+                    <div class="category-image" style="background: linear-gradient(135deg, #ff9ebb, #e75480);">
+                        <i class="fas fa-bouquet"></i>
                     </div>
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-user-check"></i> Сохранить
+                    <div class="category-content">
+                        <h3>Букеты</h3>
+                        <p>Готовые композиции для любого повода</p>
+                        <span class="category-link">
+                            Смотреть коллекцию <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Категория 2: Цветы -->
+            <div class="col">
+                <a href="/categories/flowers" class="sabi-category-card">
+                    <div class="category-image" style="background: linear-gradient(135deg, #ffd166, #ffde8a);">
+                        <i class="fas fa-spa"></i>
+                    </div>
+                    <div class="category-content">
+                        <h3>Цветы</h3>
+                        <p>Срезанные цветы для составления букета</p>
+                        <span class="category-link">
+                            Смотреть коллекцию <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Категория 3: Аксессуары -->
+            <div class="col">
+                <a href="/categories/accessories" class="sabi-category-card">
+                    <div class="category-image" style="background: linear-gradient(135deg, #a8e6cf, #6aecd8);">
+                        <i class="fas fa-ribbon"></i>
+                    </div>
+                    <div class="category-content">
+                        <h3>Аксессуары</h3>
+                        <p>Дополнения для идеального подарка</p>
+                        <span class="category-link">
+                            Смотреть коллекцию <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Категория 4: Подарки -->
+            <div class="col">
+                <a href="/categories/gifts" class="sabi-category-card">
+                    <div class="category-image" style="background: linear-gradient(135deg, #b8b3e9, #d8b4fe);">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <div class="category-content">
+                        <h3>Подарки</h3>
+                        <p>Сладкие дополнения к цветам</p>
+                        <span class="category-link">
+                            Смотреть коллекцию <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Секция хитов продаж -->
+<section class="sabi-featured-section">
+    <div class="container">
+        <div class="sabi-section-header">
+            <h2 class="sabi-section-title">
+                <i class="fas fa-crown"></i> Хиты продаж
+            </h2>
+            <p class="sabi-section-subtitle">
+                Самые популярные товары среди наших клиентов
+            </p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <!-- Товар 1 -->
+            <div class="col">
+                <div class="sabi-featured-card">
+                    <div class="featured-badge">ХИТ</div>
+                    <div class="featured-image">
+                        <div class="image-placeholder" style="background: linear-gradient(135deg, #ff9ebb, #e75480);">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="featured-content">
+                        <h3>Алая страсть</h3>
+                        <p>Классическая красная роза с бархатными лепестками</p>
+                        <div class="featured-price">
+                            <span class="price-current">650 ₽</span>
+                            <span class="price-old">750 ₽</span>
+                        </div>
+                        <form action="/categories/cart/add" method="POST" class="featured-form">
+                            <input type="hidden" name="id" value="rose1">
+                            <input type="hidden" name="name" value="Алая страсть">
+                            <input type="hidden" name="price" value="650">
+                            <button type="submit" class="sabi-btn sabi-btn-sm">
+                                <i class="fas fa-cart-plus me-2"></i> В корзину
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Товар 2 -->
+            <div class="col">
+                <div class="sabi-featured-card">
+                    <div class="featured-badge">НОВИНКА</div>
+                    <div class="featured-image">
+                        <div class="image-placeholder" style="background: linear-gradient(135deg, #ffd166, #ffde8a);">
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="featured-content">
+                        <h3>Розовая мечта</h3>
+                        <p>Нежно-розовые бутоны с тонким ароматом</p>
+                        <div class="featured-price">
+                            <span class="price-current">550 ₽</span>
+                            <span class="price-old">700 ₽</span>
+                        </div>
+                        <form action="/categories/cart/add" method="POST" class="featured-form">
+                            <input type="hidden" name="id" value="rose2">
+                            <input type="hidden" name="name" value="Розовая мечта">
+                            <input type="hidden" name="price" value="550">
+                            <button type="submit" class="sabi-btn sabi-btn-sm">
+                                <i class="fas fa-cart-plus me-2"></i> В корзину
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Товар 3 -->
+            <div class="col">
+                <div class="sabi-featured-card">
+                    <div class="featured-badge">ЭКСКЛЮЗИВ</div>
+                    <div class="featured-image">
+                        <div class="image-placeholder" style="background: linear-gradient(135deg, #a8e6cf, #6aecd8);">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                    </div>
+                    <div class="featured-content">
+                        <h3>Белая королева</h3>
+                        <p>Белоснежные лепестки с изысканной формой</p>
+                        <div class="featured-price">
+                            <span class="price-current">700 ₽</span>
+                            <span class="price-old">800 ₽</span>
+                        </div>
+                        <form action="/categories/cart/add" method="POST" class="featured-form">
+                            <input type="hidden" name="id" value="rose3">
+                            <input type="hidden" name="name" value="Белая королева">
+                            <input type="hidden" name="price" value="700">
+                            <button type="submit" class="sabi-btn sabi-btn-sm">
+                                <i class="fas fa-cart-plus me-2"></i> В корзину
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Секция отзывов -->
+<section class="sabi-testimonials-section">
+    <div class="container">
+        <div class="sabi-section-header">
+            <h2 class="sabi-section-title">
+                <i class="fas fa-comment-heart"></i> Отзывы клиентов
+            </h2>
+            <p class="sabi-section-subtitle">
+                Что говорят наши довольные покупатели
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="sabi-testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="testimonial-author">
+                            <h5>Анна</h5>
+                            <div class="testimonial-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-body">
+                        <p>"Букет был просто волшебный! Цветы свежие, ароматные, доставили точно в срок. Обязательно закажу ещё!"</p>
+                    </div>
+                    <div class="testimonial-footer">
+                        <span class="testimonial-date">15 января 2024</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="sabi-testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="testimonial-author">
+                            <h5>Михаил</h5>
+                            <div class="testimonial-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-body">
+                        <p>"Заказал цветы на годовщину свадьбы. Жена была в восторге! Очень красивый букет и профессиональная упаковка."</p>
+                    </div>
+                    <div class="testimonial-footer">
+                        <span class="testimonial-date">10 января 2024</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="sabi-testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="testimonial-author">
+                            <h5>Екатерина</h5>
+                            <div class="testimonial-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-body">
+                        <p>"Лучший цветочный магазин! Отличный сервис, всегда свежие цветы и индивидуальный подход к каждому клиенту."</p>
+                    </div>
+                    <div class="testimonial-footer">
+                        <span class="testimonial-date">5 января 2024</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Секция рассылки -->
+<section class="sabi-newsletter-section">
+    <div class="container">
+        <div class="sabi-newsletter">
+            <div class="newsletter-content">
+                <h3><i class="fas fa-envelope"></i> Подпишитесь на рассылку</h3>
+                <p>Получайте эксклюзивные предложения и новости о новинках первыми</p>
+            </div>
+            <div class="newsletter-form">
+                <form action="/subscribe" method="POST" class="row g-2">
+                    <div class="col-md-8">
+                        <input type="email" 
+                               class="form-control sabi-form-control" 
+                               placeholder="Ваш email" 
+                               name="email"
+                               required>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="sabi-btn w-100">
+                            <i class="fas fa-paper-plane me-2"></i> Подписаться
                         </button>
                     </div>
                 </form>
-                <p class="text-muted mt-2 mb-0"><small>Имя будет сохранено на год</small></p>
             </div>
         </div>
+    </div>
+</section>
+
+<!-- Стили для главной страницы -->
+<style>
+    /* Герой-секция */
+    .sabi-hero-section {
+        background: linear-gradient(135deg, #fff5f5 0%, #ffe4e9 100%);
+        padding: 5rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .sabi-hero-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+            radial-gradient(circle at 10% 20%, rgba(255, 182, 193, 0.1) 0%, transparent 20%),
+            radial-gradient(circle at 90% 80%, rgba(255, 182, 193, 0.1) 0%, transparent 20%);
+        z-index: 1;
+    }
+    
+    .sabi-hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .sabi-hero-decoration {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+    }
+    
+    .sabi-hero-decoration span {
+        position: absolute;
+        font-size: 3rem;
+        opacity: 0.3;
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    .deco-1 { top: 10%; left: 5%; animation-delay: 0s; }
+    .deco-2 { top: 20%; right: 10%; animation-delay: 1s; }
+    .deco-3 { bottom: 30%; left: 15%; animation-delay: 2s; }
+    .deco-4 { bottom: 20%; right: 20%; animation-delay: 3s; }
+    .deco-5 { top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: 4s; }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0) rotate(0); }
+        50% { transform: translateY(-20px) rotate(10deg); }
+    }
+    
+    .sabi-hero-text {
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto 3rem;
+    }
+    
+    .sabi-hero-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 4rem;
+        color: var(--sabi-pink);
+        margin-bottom: 1rem;
+    }
+    
+    .sabi-hero-subtitle {
+        font-size: 1.8rem;
+        color: var(--sabi-dusty-rose);
+        margin-bottom: 1.5rem;
+        font-weight: 300;
+    }
+    
+    .sabi-hero-description {
+        font-size: 1.2rem;
+        color: var(--sabi-dusty-rose);
+        max-width: 600px;
+        margin: 0 auto 2rem;
+        line-height: 1.6;
+    }
+    
+    .sabi-hero-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+    
+    .sabi-btn-hero {
+        background: linear-gradient(135deg, var(--sabi-pink), var(--sabi-rose));
+        color: white;
+        padding: 1rem 2.5rem;
+        font-size: 1.2rem;
+        border-radius: 30px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(231, 84, 128, 0.3);
+    }
+    
+    .sabi-btn-hero:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(231, 84, 128, 0.4);
+        color: white;
+    }
+    
+    .sabi-btn-hero-outline {
+        background: transparent;
+        color: var(--sabi-pink);
+        border: 2px solid var(--sabi-pink);
+        padding: 1rem 2.5rem;
+        font-size: 1.2rem;
+        border-radius: 30px;
+    }
+    
+    .sabi-btn-hero-outline:hover {
+        background: var(--sabi-pink);
+        color: white;
+    }
+    
+    /* Приветствие пользователя */
+    .sabi-user-greeting {
+        max-width: 500px;
+        margin: 3rem auto 0;
+    }
+    
+    .greeting-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 25px;
+        padding: 2rem;
+        box-shadow: 0 15px 40px rgba(255, 182, 193, 0.2);
+        border: 1px solid #ffe4e9;
+        backdrop-filter: blur(10px);
+    }
+    
+    .greeting-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .greeting-header i {
+        font-size: 2.5rem;
+        color: var(--sabi-pink);
+    }
+    
+    .greeting-header h5 {
+        color: var(--sabi-brown);
+        margin: 0;
+    }
+    
+    .greeting-text {
+        color: var(--sabi-dusty-rose);
+        margin-bottom: 1.5rem;
+    }
+    
+    .greeting-stats {
+        background: var(--sabi-light-pink);
+        border-radius: 15px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .stat-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .stat-item i {
+        color: var(--sabi-pink);
+        width: 20px;
+    }
+    
+    .stat-item span {
+        color: var(--sabi-brown);
+        font-size: 0.95rem;
+    }
+    
+    .stat-item strong {
+        color: var(--sabi-pink);
+    }
+    
+    /* Секция преимуществ */
+    .sabi-benefits-section {
+        padding: 4rem 0;
+        background: white;
+    }
+    
+    .benefit-card {
+        text-align: center;
+        padding: 2rem 1rem;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .benefit-card:hover {
+        transform: translateY(-10px);
+        background: var(--sabi-light-pink);
+        box-shadow: 0 10px 30px rgba(255, 182, 193, 0.15);
+    }
+    
+    .benefit-icon {
+        font-size: 2.5rem;
+        color: var(--sabi-pink);
+        margin-bottom: 1rem;
+    }
+    
+    .benefit-card h5 {
+        color: var(--sabi-brown);
+        margin-bottom: 0.5rem;
+    }
+    
+    .benefit-card p {
+        color: var(--sabi-dusty-rose);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+    
+    /* Заголовки секций */
+    .sabi-section-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .sabi-section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        color: var(--sabi-pink);
+        margin-bottom: 1rem;
+    }
+    
+    .sabi-section-subtitle {
+        color: var(--sabi-dusty-rose);
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    /* Секция категорий */
+    .sabi-categories-section {
+        padding: 5rem 0;
+        background: linear-gradient(135deg, #fff5f5 0%, #fff0f5 100%);
+    }
+    
+    .sabi-category-card {
+        display: block;
+        background: white;
+        border-radius: 25px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(255, 182, 193, 0.1);
+        text-decoration: none;
+        transition: all 0.4s ease;
+        height: 100%;
+    }
+    
+    .sabi-category-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 20px 40px rgba(255, 182, 193, 0.2);
+    }
+    
+    .category-image {
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .category-image i {
+        font-size: 4rem;
+        color: white;
+        opacity: 0.9;
+    }
+    
+    .category-content {
+        padding: 2rem;
+    }
+    
+    .category-content h3 {
+        color: var(--sabi-brown);
+        margin-bottom: 0.8rem;
+        font-size: 1.5rem;
+    }
+    
+    .category-content p {
+        color: var(--sabi-dusty-rose);
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+    }
+    
+    .category-link {
+        color: var(--sabi-pink);
+        font-weight: bold;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    /* Секция хитов продаж */
+    .sabi-featured-section {
+        padding: 5rem 0;
+        background: white;
+    }
+    
+    .sabi-featured-card {
+        background: white;
+        border-radius: 25px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(255, 182, 193, 0.1);
+        border: 1px solid #ffe4e9;
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+    }
+    
+    .sabi-featured-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(255, 182, 193, 0.2);
+    }
+    
+    .featured-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: var(--sabi-green);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        z-index: 2;
+    }
+    
+    .featured-image {
+        height: 200px;
+        background: var(--sabi-light-pink);
+    }
+    
+    .image-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .image-placeholder i {
+        font-size: 4rem;
+        color: white;
+        opacity: 0.9;
+    }
+    
+    .featured-content {
+        padding: 1.5rem;
+    }
+    
+    .featured-content h3 {
+        color: var(--sabi-brown);
+        margin-bottom: 0.5rem;
+    }
+    
+    .featured-content p {
+        color: var(--sabi-dusty-rose);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    
+    .featured-price {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .price-current {
+        font-size: 1.5rem;
+        color: var(--sabi-pink);
+        font-weight: bold;
+    }
+    
+    .price-old {
+        font-size: 1rem;
+        color: #999;
+        text-decoration: line-through;
+    }
+    
+    .sabi-btn-sm {
+        padding: 0.5rem 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Секция отзывов */
+    .sabi-testimonials-section {
+        padding: 5rem 0;
+        background: linear-gradient(135deg, #fff5f5 0%, #fff0f5 100%);
+    }
+    
+    .sabi-testimonial-card {
+        background: white;
+        border-radius: 25px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(255, 182, 193, 0.1);
+        border: 1px solid #ffe4e9;
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    .sabi-testimonial-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(255, 182, 193, 0.2);
+    }
+    
+    .testimonial-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .testimonial-avatar i {
+        font-size: 3rem;
+        color: var(--sabi-pink);
+    }
+    
+    .testimonial-author h5 {
+        color: var(--sabi-brown);
+        margin-bottom: 0.3rem;
+    }
+    
+    .testimonial-stars {
+        color: #ffd700;
+    }
+    
+    .testimonial-body {
+        margin-bottom: 1.5rem;
+    }
+    
+    .testimonial-body p {
+        color: var(--sabi-dusty-rose);
+        font-style: italic;
+        line-height: 1.6;
+    }
+    
+    .testimonial-footer {
+        border-top: 1px solid #ffe4e9;
+        padding-top: 1rem;
+    }
+    
+    .testimonial-date {
+        color: var(--sabi-dusty-rose);
+        font-size: 0.9rem;
+    }
+    
+    /* Секция рассылки */
+    .sabi-newsletter-section {
+        padding: 4rem 0;
+        background: linear-gradient(135deg, var(--sabi-pink), var(--sabi-rose));
+    }
+    
+    .sabi-newsletter {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 30px;
+        padding: 3rem;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+    
+    .newsletter-content {
+        margin-bottom: 2rem;
+    }
+    
+    .newsletter-content h3 {
+        color: var(--sabi-pink);
+        margin-bottom: 1rem;
+    }
+    
+    .newsletter-content p {
+        color: var(--sabi-dusty-rose);
+    }
+    
+    @media (max-width: 768px) {
+        .sabi-hero-title {
+            font-size: 2.5rem;
+        }
         
-        <div class="mt-4">
-            <a href="/categories" class="btn btn-primary btn-lg me-3">
-                <i class="fas fa-shopping-cart"></i> Начать покупки
-            </a>
-            <a href="/clear-cookies" class="btn btn-outline-secondary btn-lg" 
-               onclick="return confirm('Очистить все куки?')">
-                <i class="fas fa-cookie-bite"></i> Очистить куки
-            </a>
-        </div>
-    </div>
-</section>
+        .sabi-hero-subtitle {
+            font-size: 1.3rem;
+        }
+        
+        .sabi-hero-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .sabi-section-title {
+            font-size: 2rem;
+        }
+        
+        .greeting-card {
+            padding: 1.5rem;
+        }
+        
+        .sabi-newsletter {
+            padding: 2rem;
+        }
+    }
+</style>
 
-<!-- Секция "Наши розы" -->
-<section class="container py-5">
-    <div class="text-center mb-5">
-        <h2 class="mb-3">Наши розы</h2>
-        <p class="text-muted">Выберите свою идеальную розу из нашей коллекции</p>
-    </div>
-
-    <div class="row">
-        <!-- Карточка 1 -->
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-header text-center bg-light">
-                    <h4 class="mb-0 text-primary">Любовь</h4>
-                </div>
-                <div class="card-body text-center">
-                    <i class="fas fa-heart fa-3x text-danger mb-3"></i>
-                    <h5 class="card-title">Алая страсть</h5>
-                    <p class="card-text">Классическая красная роза с бархатными лепестками. Символ вечной любви и преданности.</p>
-                </div>
-                <div class="card-footer bg-white text-center">
-                    <span class="price-old me-2">750 ₽</span>
-                    <span class="price-new">650 ₽</span>
-                    <button class="btn btn-primary btn-sm mt-2 w-100">
-                        <i class="fas fa-cart-plus"></i> В корзину
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Карточка 2 -->
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-header text-center bg-light">
-                    <h4 class="mb-0 text-primary">Нежность</h4>
-                </div>
-                <div class="card-body text-center">
-                    <i class="fas fa-star fa-3x text-warning mb-3"></i>
-                    <h5 class="card-title">Розовая мечта</h5>
-                    <p class="card-text">Нежно-розовые бутоны с тонким ароматом. Идеально для первого свидания.</p>
-                </div>
-                <div class="card-footer bg-white text-center">
-                    <span class="price-old me-2">700 ₽</span>
-                    <span class="price-new">550 ₽</span>
-                    <button class="btn btn-primary btn-sm mt-2 w-100">
-                        <i class="fas fa-cart-plus"></i> В корзину
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Карточка 3 -->
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-header text-center bg-light">
-                    <h4 class="mb-0 text-primary">Элегантность</h4>
-                </div>
-                <div class="card-body text-center">
-                    <i class="fas fa-crown fa-3x text-success mb-3"></i>
-                    <h5 class="card-title">Белая королева</h5>
-                    <p class="card-text">Белоснежные лепестки с изысканной формой. Символ чистоты и элегантности.</p>
-                </div>
-                <div class="card-footer bg-white text-center">
-                    <span class="price-old me-2">800 ₽</span>
-                    <span class="price-new">700 ₽</span>
-                    <button class="btn btn-primary btn-sm mt-2 w-100">
-                        <i class="fas fa-cart-plus"></i> В корзину
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Инфо секция -->
-<section class="bg-light py-5 mt-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4 text-center mb-4">
-                <i class="fas fa-shipping-fast fa-2x text-primary mb-3"></i>
-                <h5>Быстрая доставка</h5>
-                <p>Доставка по Москве в течение 2 часов</p>
-            </div>
-            <div class="col-md-4 text-center mb-4">
-                <i class="fas fa-award fa-2x text-primary mb-3"></i>
-                <h5>Свежие цветы</h5>
-                <p>Только свежие цветы от проверенных поставщиков</p>
-            </div>
-            <div class="col-md-4 text-center mb-4">
-                <i class="fas fa-headset fa-2x text-primary mb-3"></i>
-                <h5>Поддержка 24/7</h5>
-                <p>Консультации флористов круглосуточно</p>
-            </div>
-        </div>
-    </div>
-</section>
+<script>
+    // Анимация появления элементов
+    document.addEventListener('DOMContentLoaded', function() {
+        // Анимация герой-секции
+        const heroTitle = document.querySelector('.sabi-hero-title');
+        const heroSubtitle = document.querySelector('.sabi-hero-subtitle');
+        const heroDescription = document.querySelector('.sabi-hero-description');
+        const heroActions = document.querySelector('.sabi-hero-actions');
+        const greetingCard = document.querySelector('.greeting-card');
+        
+        [heroTitle, heroSubtitle, heroDescription, heroActions, greetingCard].forEach((el, index) => {
+            if (el) {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 200);
+            }
+        });
+        
+        // Анимация категорий
+        const categoryCards = document.querySelectorAll('.sabi-category-card');
+        categoryCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(50px) scale(0.9)';
+            
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0) scale(1)';
+            }, 500 + index * 150);
+        });
+        

@@ -3,19 +3,30 @@ module.exports = {
     userData: function(req, res, next) {
         res.locals.isAuthenticated = !!req.session.userId;
         res.locals.currentUser = req.session.user || null;
+        res.locals.user = req.session.user || null;
         res.locals.isAdmin = req.session.role === 'admin';
         res.locals.userName = req.session.username || req.cookies.userName || 'Гость';
         next();
     },
     
-    // Проверка авторизации
+    // Проверка авторизации (ваш checkAuth.js)
     isAuthenticated: function(req, res, next) {
-        if (req.session.userId) {
-            return next();
+        console.log('🔐 Проверка авторизации:', req.session.userId ? 'авторизован' : 'не авторизован');
+        
+        if (!req.session.userId) {
+            // Сохраняем URL для возврата после входа
+            req.session.returnTo = req.originalUrl || req.url;
+            
+            // Устанавливаем сообщение об ошибке через flash
+            req.flash('error', 'Для доступа к этой странице необходимо войти в систему');
+            console.log('❌ Доступ запрещен: пользователь не авторизован');
+            
+            // Редирект на страницу входа
+            return res.redirect('/auth/login');
         }
-        req.session.returnTo = req.originalUrl;
-        req.flash('error', 'Для доступа к этой странице необходимо войти в систему');
-        res.redirect('/auth/login');
+        
+        console.log('✅ Доступ разрешен для пользователя ID:', req.session.userId);
+        next();
     },
     
     // Проверка на администратора

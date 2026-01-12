@@ -1,18 +1,20 @@
 module.exports = function(req, res, next) {
-    // Данные магазина
+    // Данные магазина для футера
     res.locals.shopInfo = {
         phone: '+7 (999) 123-45-67',
         email: 'info@flowersbysabi.ru',
         address: 'г. Москва, ул. Цветочная, 1'
     };
     
-    // Статические категории для меню (если нужно)
+    // Категории для меню
     res.locals.categories = [
-        { name: 'Розы', url: '/categories/roses', icon: 'fa-rose' },
-        { name: 'Букеты', url: '/categories/bouquets', icon: 'fa-birthday-cake' },
-        { name: 'Аксессуары', url: '/categories/accessories', icon: 'fa-gift' },
-        { name: 'Подарки', url: '/categories/gifts', icon: 'fa-gift' }
+        { name: 'Розы', url: '/roses', icon: 'fa-rose' },
+        { name: 'Букеты', url: '/bouquets', icon: 'fa-birthday-cake' },
+        { name: 'Подарки', url: '/gifts', icon: 'fa-gift' }
     ];
+    
+    // Для отладки
+    res.locals.sessionExpires = 3600; // 1 час в секундах
     
     next();
 };

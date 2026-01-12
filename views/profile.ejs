@@ -1,0 +1,99 @@
+<div class="container">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <div class="user-avatar mx-auto mb-3" style="width: 100px; height: 100px; font-size: 2.5rem;">
+                        <%= user.username ? user.username.charAt(0).toUpperCase() : 'U' %>
+                    </div>
+                    <h4><%= user.fullName || user.username %></h4>
+                    <p class="text-muted mb-1">@<%= user.username %></p>
+                    <p class="text-muted mb-4">
+                        <%= user.email %>
+                    </p>
+                    <div class="d-flex justify-content-center mb-2">
+                        <button class="btn btn-primary">Редактировать</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Информация о профиле</h5>
+                    
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Полное имя</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0"><%= user.fullName || 'Не указано' %></p>
+                        </div>
+                    </div>
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Имя пользователя</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0"><%= user.username %></p>
+                        </div>
+                    </div>
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Email</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0"><%= user.email %></p>
+                        </div>
+                    </div>
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Роль</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <span class="badge <%= user.role === 'admin' ? 'bg-danger' : 'bg-primary' %>">
+                                <%= user.role === 'admin' ? 'Администратор' : 'Пользователь' %>
+                            </span>
+                        </div>
+                    </div>
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <p class="mb-0">Дата регистрации</p>
+                        </div>
+                        <div class="col-sm-9">
+                            <p class="text-muted mb-0">
+                                <%= user.createdAt ? new Date(user.createdAt).toLocaleDateString('ru-RU') : 'Неизвестно' %>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Статистика посещений</h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Всего посещений:</strong> <%= visitCount || 0 %></p>
+                            <p><strong>Запросов в сессии:</strong> <%= sessionCounter || 0 %></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Последнее посещение:</strong> <%= lastRequest || 'только что' %></p>
+                            <p><strong>Первое посещение:</strong> <%= firstVisit || 'только что' %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

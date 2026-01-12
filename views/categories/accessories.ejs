@@ -1,48 +1,538 @@
 <!-- views/categories/accessories.ejs -->
 <div class="container mt-5">
-    <h1 class="mb-4">🎀 Аксессуары</h1>
-    
+    <!-- Хлебные крошки -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb sabi-breadcrumb">
+            <li class="breadcrumb-item"><a href="/" class="sabi-link"><i class="fas fa-home"></i> Главная</a></li>
+            <li class="breadcrumb-item"><a href="/categories" class="sabi-link"><i class="fas fa-list"></i> Категории</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><i class="fas fa-ribbon"></i> Аксессуары</li>
+        </ol>
+    </nav>
+
+    <!-- Заголовок страницы -->
+    <div class="sabi-page-header mb-5">
+        <h1 class="sabi-page-title">
+            <i class="fas fa-ribbon"></i> Аксессуары
+        </h1>
+        <p class="sabi-page-subtitle">
+            Дополнительные украшения и аксессуары для идеального подарка
+        </p>
+    </div>
+
+    <!-- Сетка товаров -->
     <% if (products && products.length > 0) { %>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Название</th>
-                    <th>Описание</th>
-                    <th>Цена</th>
-                    <th>Действие</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% products.forEach(product => { %>
-                <tr>
-                    <td><%= product.name %></td>
-                    <td><%= product.description || '-' %></td>
-                    <td class="text-success fw-bold"><%= product.price %> ₽</td>
-                    <td>
-                        <!-- ФОРМА ДЛЯ ДОБАВЛЕНИЯ В КОРЗИНУ -->
-                        <form action="/categories/cart/add" method="POST" class="d-inline">
-                            <input type="hidden" name="id" value="<%= product.id %>">
-                            <input type="hidden" name="name" value="<%= product.name %>">
-                            <input type="hidden" name="price" value="<%= product.price %>">
-                            <button type="submit" class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-cart-plus"></i> В корзину
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                <% }) %>
-            </tbody>
-        </table>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <% products.forEach(product => { %>
+                <div class="col">
+                    <div class="sabi-product-card">
+                        <!-- Изображение товара -->
+                        <div class="sabi-product-image">
+                            <% if (product.image) { %>
+                                <img src="<%= product.image %>" alt="<%= product.name %>" class="img-fluid">
+                            <% } else { %>
+                                <div class="sabi-product-image-placeholder">
+                                    <i class="fas fa-gift"></i>
+                                </div>
+                            <% } %>
+                            <div class="sabi-product-badge">
+                                <span class="badge sabi-badge-new">Новинка</span>
+                            </div>
+                        </div>
+
+                        <!-- Информация о товаре -->
+                        <div class="sabi-product-info">
+                            <h3 class="sabi-product-title"><%= product.name %></h3>
+                            <p class="sabi-product-description"><%= product.description || 'Стильный аксессуар для дополнения букета' %></p>
+                            
+                            <div class="sabi-product-meta">
+                                <div class="sabi-product-price">
+                                    <span class="price-current"><%= product.price %> ₽</span>
+                                    <% if (product.oldPrice) { %>
+                                        <span class="price-old"><%= product.oldPrice %> ₽</span>
+                                    <% } %>
+                                </div>
+                                
+                                <div class="sabi-product-rating">
+                                    <div class="stars">
+                                        <% for(let i = 1; i <= 5; i++) { %>
+                                            <% if (i <= (product.rating || 4)) { %>
+                                                <i class="fas fa-star"></i>
+                                            <% } else { %>
+                                                <i class="far fa-star"></i>
+                                            <% } %>
+                                        <% } %>
+                                    </div>
+                                    <span class="rating-count">(<%= product.reviews || 12 %>)</span>
+                                </div>
+                            </div>
+
+                            <!-- Форма добавления в корзину -->
+                            <form action="/categories/cart/add" method="POST" class="mt-3">
+                                <input type="hidden" name="id" value="<%= product.id %>">
+                                <input type="hidden" name="name" value="<%= product.name %>">
+                                <input type="hidden" name="price" value="<%= product.price %>">
+                                <input type="hidden" name="image" value="<%= product.image || '' %>">
+                                
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="quantity-selector">
+                                        <button type="button" class="btn btn-quantity minus" onclick="changeQuantity(this, -1)">-</button>
+                                        <input type="number" name="quantity" value="1" min="1" max="10" class="quantity-input" readonly>
+                                        <button type="button" class="btn btn-quantity plus" onclick="changeQuantity(this, 1)">+</button>
+                                    </div>
+                                    
+                                    <button type="submit" class="sabi-btn sabi-btn-cart">
+                                        <i class="fas fa-cart-plus me-2"></i> В корзину
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <!-- Быстрые действия -->
+                            <div class="sabi-product-actions mt-3">
+                                <button class="btn btn-icon" title="В избранное">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                                <button class="btn btn-icon" title="Сравнить">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </button>
+                                <button class="btn btn-icon" title="Быстрый просмотр">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
     <% } else { %>
-        <div class="alert alert-info">
-            <i class="fas fa-info-circle me-2"></i>
-            Аксессуары скоро появятся в нашем ассортименте!
+        <!-- Сообщение об отсутствии товаров -->
+        <div class="sabi-empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-gift fa-3x"></i>
+            </div>
+            <h3 class="empty-state-title">Аксессуары скоро появятся!</h3>
+            <p class="empty-state-text">
+                Мы активно работаем над пополнением ассортимента аксессуаров. 
+                Скоро здесь появятся новые украшения для ваших букетов!
+            </p>
+            <div class="empty-state-actions">
+                <a href="/categories" class="sabi-btn sabi-btn-outline">
+                    <i class="fas fa-arrow-left me-2"></i> Вернуться к категориям
+                </a>
+                <a href="/" class="sabi-btn">
+                    <i class="fas fa-home me-2"></i> На главную
+                </a>
+            </div>
         </div>
     <% } %>
-    
-    <div class="mt-4">
-        <a href="/categories" class="btn btn-secondary">
+
+    <!-- Пагинация (если нужно) -->
+    <% if (totalPages && totalPages > 1) { %>
+        <nav aria-label="Навигация по страницам" class="mt-5">
+            <ul class="pagination justify-content-center sabi-pagination">
+                <% if (currentPage > 1) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= currentPage - 1 %>">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                <% } %>
+                
+                <% for(let i = 1; i <= totalPages; i++) { %>
+                    <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                        <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                    </li>
+                <% } %>
+                
+                <% if (currentPage < totalPages) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= currentPage + 1 %>">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                <% } %>
+            </ul>
+        </nav>
+    <% } %>
+
+    <!-- Кнопка возврата -->
+    <div class="text-center mt-5">
+        <a href="/categories" class="sabi-btn sabi-btn-outline">
             <i class="fas fa-arrow-left me-2"></i> Назад к категориям
         </a>
     </div>
 </div>
+
+<!-- Стили для этой страницы -->
+<style>
+    .sabi-breadcrumb {
+        background: var(--sabi-light-pink);
+        border-radius: 10px;
+        padding: 1rem;
+        border: 1px solid #ffe4e9;
+    }
+    
+    .sabi-breadcrumb .breadcrumb-item a {
+        color: var(--sabi-pink);
+        text-decoration: none;
+    }
+    
+    .sabi-breadcrumb .breadcrumb-item.active {
+        color: var(--sabi-dusty-rose);
+    }
+    
+    .sabi-page-header {
+        text-align: center;
+        padding: 2rem;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 240, 245, 0.9));
+        border-radius: 20px;
+        border: 2px dashed var(--sabi-rose);
+    }
+    
+    .sabi-page-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        color: var(--sabi-pink);
+        margin-bottom: 1rem;
+    }
+    
+    .sabi-page-subtitle {
+        color: var(--sabi-dusty-rose);
+        font-size: 1.2rem;
+        font-style: italic;
+    }
+    
+    .sabi-product-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(255, 182, 193, 0.1);
+        border: 1px solid #ffe4e9;
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .sabi-product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(255, 182, 193, 0.2);
+    }
+    
+    .sabi-product-image {
+        height: 250px;
+        background: var(--sabi-light-pink);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .sabi-product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .sabi-product-card:hover .sabi-product-image img {
+        transform: scale(1.05);
+    }
+    
+    .sabi-product-image-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--sabi-rose);
+        font-size: 4rem;
+    }
+    
+    .sabi-product-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+    }
+    
+    .sabi-badge-new {
+        background: linear-gradient(135deg, var(--sabi-green), #34ce9e);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+    }
+    
+    .sabi-product-info {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .sabi-product-title {
+        font-family: 'Georgia', serif;
+        font-size: 1.3rem;
+        color: var(--sabi-brown);
+        margin-bottom: 0.8rem;
+        font-weight: bold;
+    }
+    
+    .sabi-product-description {
+        color: var(--sabi-dusty-rose);
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+        flex-grow: 1;
+    }
+    
+    .sabi-product-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .sabi-product-price {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .price-current {
+        font-size: 1.5rem;
+        color: var(--sabi-pink);
+        font-weight: bold;
+    }
+    
+    .price-old {
+        font-size: 0.9rem;
+        color: #999;
+        text-decoration: line-through;
+    }
+    
+    .sabi-product-rating {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .stars {
+        color: #ffd700;
+    }
+    
+    .rating-count {
+        color: var(--sabi-dusty-rose);
+        font-size: 0.9rem;
+    }
+    
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .btn-quantity {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: var(--sabi-light-pink);
+        border: 1px solid var(--sabi-rose);
+        color: var(--sabi-pink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    
+    .quantity-input {
+        width: 50px;
+        text-align: center;
+        border: 1px solid var(--sabi-rose);
+        border-radius: 10px;
+        padding: 5px;
+        color: var(--sabi-brown);
+        background: white;
+    }
+    
+    .sabi-btn-cart {
+        padding: 0.7rem 1.5rem;
+        background: linear-gradient(135deg, var(--sabi-pink), var(--sabi-rose));
+    }
+    
+    .sabi-product-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .btn-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--sabi-light-pink);
+        border: 1px solid #ffe4e9;
+        color: var(--sabi-pink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-icon:hover {
+        background: var(--sabi-pink);
+        color: white;
+        transform: rotate(10deg);
+    }
+    
+    .sabi-empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 20px;
+        border: 2px dashed var(--sabi-rose);
+    }
+    
+    .empty-state-icon {
+        color: var(--sabi-rose);
+        margin-bottom: 1.5rem;
+    }
+    
+    .empty-state-title {
+        color: var(--sabi-pink);
+        font-family: 'Playfair Display', serif;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state-text {
+        color: var(--sabi-dusty-rose);
+        max-width: 500px;
+        margin: 0 auto 2rem;
+    }
+    
+    .empty-state-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .sabi-pagination .page-link {
+        color: var(--sabi-pink);
+        border: 1px solid #ffe4e9;
+        margin: 0 5px;
+        border-radius: 10px;
+    }
+    
+    .sabi-pagination .page-item.active .page-link {
+        background: var(--sabi-pink);
+        border-color: var(--sabi-pink);
+        color: white;
+    }
+    
+    @media (max-width: 768px) {
+        .sabi-page-title {
+            font-size: 2rem;
+        }
+        
+        .sabi-product-meta {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .empty-state-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<script>
+    function changeQuantity(button, change) {
+        const input = button.closest('.quantity-selector').querySelector('.quantity-input');
+        let value = parseInt(input.value) + change;
+        
+        if (value < 1) value = 1;
+        if (value > 10) value = 10;
+        
+        input.value = value;
+    }
+    
+    // Анимация добавления в корзину
+    document.querySelectorAll('form[action="/categories/cart/add"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const productName = this.querySelector('input[name="name"]').value;
+            
+            // Показываем уведомление
+            showNotification(`Товар "${productName}" добавлен в корзину!`);
+            
+            // Отправляем форму
+            setTimeout(() => {
+                this.submit();
+            }, 500);
+        });
+    });
+    
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'sabi-notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas fa-check-circle"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Анимация появления
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        // Автоматическое скрытие
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 3000);
+    }
+    
+    // Стили для уведомления
+    const style = document.createElement('style');
+    style.textContent = `
+        .sabi-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 15px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 10px 30px rgba(231, 84, 128, 0.2);
+            border: 1px solid #ffe4e9;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 9999;
+            max-width: 300px;
+        }
+        
+        .sabi-notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .notification-content i {
+            color: var(--sabi-green);
+            font-size: 1.2rem;
+        }
+        
+        .notification-content span {
+            color: var(--sabi-brown);
+        }
+    `;
+    document.head.appendChild(style);
+</script>

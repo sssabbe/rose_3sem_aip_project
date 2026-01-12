@@ -1,8 +1,401 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+/* Flowers by Sabi - Нежный розовый дизайн */
+
+/* ===== СБРОС И БАЗОВЫЕ СТИЛИ ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-a {
-  color: #00B7FF;
+body {
+    font-family: 'Georgia', serif;
+    line-height: 1.6;
+    color: #5a4a4a;
+    background: linear-gradient(135deg, #fff5f5 0%, #fff0f5 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Фоновые цветочные элементы */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(255, 182, 193, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(255, 182, 193, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 50% 50%, rgba(255, 182, 193, 0.05) 0%, transparent 30%);
+    z-index: -1;
+}
+
+/* ===== ХЕДЕР (ШАПКА) ===== */
+header {
+    background: linear-gradient(135deg, rgba(255, 240, 245, 0.95) 0%, rgba(255, 228, 225, 0.95) 100%);
+    padding: 3rem 1rem 2rem;
+    text-align: center;
+    position: relative;
+    border-bottom: 2px solid #ffd6e7;
+    box-shadow: 0 4px 20px rgba(255, 182, 193, 0.1);
+}
+
+/* Декоративный элемент в шапке */
+header::before {
+    content: "❀";
+    font-size: 2rem;
+    color: #ff9ebb;
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: #e75480;
+    margin-bottom: 0.5rem;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
+}
+
+.tagline {
+    font-size: 1.3rem;
+    color: #b76e79;
+    margin-bottom: 2.5rem;
+    font-style: italic;
+    letter-spacing: 1px;
+}
+
+/* Кнопки авторизации */
+.auth-buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn {
+    padding: 0.9rem 2.5rem;
+    border: none;
+    border-radius: 30px;
+    font-family: 'Georgia', serif;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+}
+
+.btn:focus:not(:active)::after {
+    animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(20, 20);
+        opacity: 0;
+    }
+}
+
+.btn-login {
+    background: transparent;
+    color: #e75480;
+    border: 2px solid #e75480;
+}
+
+.btn-login:hover {
+    background: #e75480;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(231, 84, 128, 0.3);
+}
+
+.btn-register {
+    background: linear-gradient(135deg, #e75480 0%, #ff6b9d 100%);
+    color: white;
+    border: 2px solid #e75480;
+}
+
+.btn-register:hover {
+    background: linear-gradient(135deg, #d44a75 0%, #ff5a8c 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(231, 84, 128, 0.4);
+}
+
+/* ===== КАТЕГОРИИ ===== */
+.categories {
+    padding: 5rem 1rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.categories h2 {
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    color: #e75480;
+    margin-bottom: 4rem;
+    font-weight: 300;
+    position: relative;
+}
+
+.categories h2::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #ff9ebb, transparent);
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 3rem;
+    padding: 1rem;
+}
+
+.category-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(255, 182, 193, 0.15);
+    transition: all 0.4s ease;
+    position: relative;
+    border: 1px solid #ffe4e9;
+}
+
+.category-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 20px 40px rgba(255, 182, 193, 0.25);
+}
+
+.category-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #ff9ebb, #e75480);
+}
+
+.category-image {
+    height: 250px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+/* Розы */
+.roses-image {
+    background: linear-gradient(rgba(255, 240, 245, 0.8), rgba(255, 240, 245, 0.8)),
+                url('/images/roses.jpg');
+}
+
+/* Букеты */
+.bouquets-image {
+    background: linear-gradient(rgba(255, 228, 225, 0.8), rgba(255, 228, 225, 0.8)),
+                url('/images/bouquets.jpg');
+}
+
+/* Подарки */
+.gifts-image {
+    background: linear-gradient(rgba(255, 218, 233, 0.8), rgba(255, 218, 233, 0.8)),
+                url('/images/gifts.jpg');
+}
+
+.category-content {
+    padding: 2rem;
+}
+
+.category-content h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: #e75480;
+    margin-bottom: 1rem;
+    font-weight: 400;
+}
+
+.category-content p {
+    color: #8a736f;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+.btn-view {
+    background: #ffe4e9;
+    color: #e75480;
+    padding: 0.7rem 1.8rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.btn-view:hover {
+    background: #e75480;
+    color: white;
+    padding: 0.7rem 2.2rem;
+}
+
+/* ===== СТАТИСТИКА ===== */
+.stats {
+    background: linear-gradient(135deg, rgba(255, 218, 233, 0.3) 0%, rgba(255, 228, 225, 0.3) 100%);
+    padding: 4rem 1rem;
+    text-align: center;
+    border-radius: 40px;
+    margin: 3rem auto;
+    max-width: 1200px;
+    border: 2px dashed #ff9ebb;
+}
+
+.stats h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    color: #e75480;
+    margin-bottom: 3rem;
+    font-weight: 300;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.stat-item {
+    background: rgba(255, 255, 255, 0.7);
+    padding: 2.5rem 2rem;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 182, 193, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: scale(1.05);
+}
+
+.stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: #e75480;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 1.2rem;
+    color: #b76e79;
+    letter-spacing: 1px;
+}
+
+/* ===== ФУТЕР ===== */
+footer {
+    background: linear-gradient(135deg, #fff0f5 0%, #ffe4e9 100%);
+    padding: 3rem 1rem;
+    text-align: center;
+    border-top: 2px solid #ffd6e7;
+    margin-top: 4rem;
+}
+
+footer p {
+    color: #b76e79;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+/* ===== АДАПТИВНОСТЬ ===== */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.5rem;
+    }
+    
+    .tagline {
+        font-size: 1.1rem;
+    }
+    
+    .auth-buttons {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .btn {
+        width: 200px;
+        text-align: center;
+    }
+    
+    .category-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .categories h2,
+    .stats h2 {
+        font-size: 2.2rem;
+    }
+    
+    .stat-number {
+        font-size: 2.8rem;
+    }
+}
+
+/* Анимация появления */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.category-card, .stat-item {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.category-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.category-card:nth-child(3) {
+    animation-delay: 0.4s;
 }

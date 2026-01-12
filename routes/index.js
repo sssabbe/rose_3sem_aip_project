@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var checkAuth = require("../middlewares/checkAuth.js"); // ← ДОБАВЬТЕ ЭТОТ ИМПОРТ
 
 // Каталоги
 const catalogs = {
@@ -54,7 +55,9 @@ const catalogs = {
     ]
 };
 
-// Главная страница
+// ========== ОБЩЕДОСТУПНЫЕ СТРАНИЦЫ ==========
+
+// Главная страница (доступна всем)
 router.get('/', function(req, res, next) {
     // Работа с куками
     var visitCount = parseInt(req.cookies.visitCount) || 0;
@@ -92,8 +95,6 @@ router.get('/', function(req, res, next) {
     }
     
     // Рендерим страницу
-    // Обратите внимание: переменные user и isAuthenticated уже есть в res.locals
-    // благодаря middleware createUser
     res.render('index', { 
         title: 'Магазин цветов "Роза"',
         // Куки
@@ -114,10 +115,11 @@ router.get('/', function(req, res, next) {
     });
 });
 
-// Страница входа/регистрации
+// Страница входа/регистрации (доступна всем)
 router.get('/logreg', function(req, res, next) {
     // Если уже авторизован, редирект на главную
     if (res.locals.isAuthenticated) {
+        req.session.success = 'Вы уже вошли в систему';
         return res.redirect('/');
     }
     
@@ -131,6 +133,67 @@ router.get('/logreg', function(req, res, next) {
     delete req.session.error;
     delete req.session.success;
 });
+
+// ========== ЗАЩИЩЕННЫЕ СТРАНИЦЫ (требуют авторизации) ==========
+
+// Профиль пользователя (ЗАЩИЩЕН checkAuth)
+router.get('/profile', checkAuth, function(req, res, next) {
+    res.render('profile', {
+        title: 'Мой профиль',
+        user: res.locals.user,
+        sessionInfo: {
+            id: req.sessionID,
+            visits: req.session.visitCount || 0,
+            firstVisit: req.session.firstVisit
+        }
+    });
+});
+
+// Корзина (ЗАЩИЩЕН checkAuth)
+router.get('/cart', checkAuth, function(req, res, next) {
+    // Если корзины нет в сессии, создаем пустую
+    if (!req.session.cart) {
+        req.session.cart = {
+            items: [],
+            total: 0,
+            itemCount: 0,
+            lastUpdated: new Date().toLocaleString('ru-RU')
+        };
+    }
+    
+    res.render('cart', {
+        title: 'Корзина',
+        cart: req.session.cart
+    });
+});
+
+// Страница оформления заказа (ЗАЩИЩЕН checkAuth)
+router.get('/checkout', checkAuth, function(req, res, next) {
+    // Проверяем, есть ли товары в корзине
+    if (!req.session.cart || req.session.cart.items.length === 0) {
+        req.session.error = 'Ваша корзина пуста. Добавьте товары перед оформлением заказа.';
+        return res.redirect('/cart');
+    }
+    
+    res.render('checkout', {
+        title: 'Оформление заказа',
+        cart: req.session.cart
+    });
+});
+
+// Мои заказы (ЗАЩИЩЕН checkAuth)
+router.get('/orders', checkAuth, function(req, res, next) {
+    // Здесь должна быть логика получения заказов из БД
+    // Пока используем заглушку
+    const orders = [];
+    
+    res.render('orders', {
+        title: 'Мои заказы',
+        orders: orders
+    });
+});
+
+// ========== ДЕЙСТВИЯ (требуют авторизации) ==========
 
 // Обработка входа/регистрации
 router.post('/logreg', async function(req, res, next) {
@@ -155,7 +218,11 @@ router.post('/logreg', async function(req, res, next) {
             req.session.username = user.username;
             req.session.success = 'Регистрация успешна! Добро пожаловать!';
             
-            res.redirect('/');
+            // Редирект на сохраненный URL или на главную
+            const returnTo = req.session.returnTo || '/';
+            delete req.session.returnTo;
+            
+            res.redirect(returnTo);
             
         } else {
             // Авторизация
@@ -166,7 +233,11 @@ router.post('/logreg', async function(req, res, next) {
                 req.session.username = foundUser.username;
                 req.session.success = 'Вы успешно вошли в систему!';
                 
-                res.redirect('/');
+                // Редирект на сохраненный URL или на главную
+                const returnTo = req.session.returnTo || '/';
+                delete req.session.returnTo;
+                
+                res.redirect(returnTo);
                 
             } else {
                 req.session.error = 'Неверный пароль! Попробуйте снова.';
@@ -181,6 +252,111 @@ router.post('/logreg', async function(req, res, next) {
     }
 });
 
+// Добавление в корзину (ЗАЩИЩЕН checkAuth)
+router.post('/add-to-cart', checkAuth, function(req, res, next) {
+    const productId = req.body.productId;
+    const quantity = parseInt(req.body.quantity) || 1;
+    
+    // Ищем товар во всех каталогах
+    let product = null;
+    
+    // Проверяем в розах
+    product = catalogs.roses.find(r => r.id === productId);
+    if (!product) {
+        // Проверяем в букетах
+        product = catalogs.bouquets.find(b => b.id === productId);
+    }
+    
+    if (product) {
+        // Инициализация корзины
+        if (!req.session.cart) {
+            req.session.cart = {
+                items: [],
+                total: 0,
+                itemCount: 0,
+                lastUpdated: new Date().toLocaleString('ru-RU')
+            };
+        }
+        
+        // Проверяем наличие товара в корзине
+        const existingIndex = req.session.cart.items.findIndex(item => item.id === productId);
+        
+        if (existingIndex > -1) {
+            // Увеличиваем количество
+            req.session.cart.items[existingIndex].quantity += quantity;
+        } else {
+            // Добавляем новый товар
+            req.session.cart.items.push({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                quantity: quantity,
+                category: product.category,
+                addedAt: new Date().toLocaleString('ru-RU')
+            });
+        }
+        
+        // Пересчитываем сумму и количество
+        req.session.cart.total = req.session.cart.items.reduce((sum, item) => {
+            return sum + (item.price * item.quantity);
+        }, 0);
+        
+        req.session.cart.itemCount = req.session.cart.items.reduce((count, item) => {
+            return count + item.quantity;
+        }, 0);
+        
+        req.session.cart.lastUpdated = new Date().toLocaleString('ru-RU');
+        
+        req.session.success = `Товар "${product.name}" добавлен в корзину!`;
+    } else {
+        req.session.error = 'Товар не найден';
+    }
+    
+    res.redirect('/');
+});
+
+// Удаление из корзины (ЗАЩИЩЕН checkAuth)
+router.post('/remove-from-cart', checkAuth, function(req, res, next) {
+    const productId = req.body.productId;
+    
+    if (req.session.cart) {
+        const itemIndex = req.session.cart.items.findIndex(item => item.id === productId);
+        
+        if (itemIndex > -1) {
+            const removedItem = req.session.cart.items[itemIndex];
+            req.session.cart.items.splice(itemIndex, 1);
+            
+            // Пересчитываем
+            req.session.cart.total = req.session.cart.items.reduce((sum, item) => {
+                return sum + (item.price * item.quantity);
+            }, 0);
+            
+            req.session.cart.itemCount = req.session.cart.items.reduce((count, item) => {
+                return count + item.quantity;
+            }, 0);
+            
+            req.session.cart.lastUpdated = new Date().toLocaleString('ru-RU');
+            
+            req.session.success = `Товар "${removedItem.name}" удален из корзины`;
+        }
+    }
+    
+    res.redirect('/cart');
+});
+
+// Очистка корзины (ЗАЩИЩЕН checkAuth)
+router.post('/clear-cart', checkAuth, function(req, res, next) {
+    req.session.cart = {
+        items: [],
+        total: 0,
+        itemCount: 0,
+        lastUpdated: new Date().toLocaleString('ru-RU')
+    };
+    
+    req.session.success = 'Корзина очищена!';
+    res.redirect('/cart');
+});
+
 // Выход из системы
 router.get('/logout', function(req, res, next) {
     console.log('Выход пользователя:', req.session.username);
@@ -188,30 +364,32 @@ router.get('/logout', function(req, res, next) {
     req.session.destroy(function(err) {
         if (err) {
             console.error('Ошибка при выходе:', err);
+            req.session.error = 'Ошибка при выходе из системы';
+            return res.redirect('/');
         }
+        
         res.redirect('/');
     });
 });
 
-// Профиль пользователя
-router.get('/profile', function(req, res, next) {
-    // Проверяем авторизацию через middleware
-    if (!res.locals.isAuthenticated) {
-        req.session.error = 'Для просмотра профиля необходимо войти в систему';
-        return res.redirect('/logreg');
-    }
-    
-    res.render('profile', {
-        title: 'Мой профиль',
-        user: res.locals.user, // Получаем из middleware
-        sessionInfo: {
-            id: req.sessionID,
-            visits: req.session.visitCount || 0,
-            firstVisit: req.session.firstVisit
-        }
+// ========== ОБЩЕДОСТУПНЫЕ КАТЕГОРИИ ==========
+
+// Страница роз (доступна всем)
+router.get('/roses', function(req, res, next) {
+    res.render('categories/flowers', {
+        title: 'Розы',
+        products: catalogs.roses,
+        category: 'roses'
     });
 });
 
-// Другие маршруты остаются без изменений...
+// Страница букетов (доступна всем)
+router.get('/bouquets', function(req, res, next) {
+    res.render('categories/bouquets', {
+        title: 'Букеты',
+        products: catalogs.bouquets,
+        category: 'bouquets'
+    });
+});
 
 module.exports = router;

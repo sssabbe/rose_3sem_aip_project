@@ -3,193 +3,617 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %> | Flowers by Sabi</title>
+    <title>Регистрация | Flowers by Sabi</title>
     
+    <!-- Bootstrap для сетки -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome для иконок -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Шрифты -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;700&family=Georgia&display=swap" rel="stylesheet">
     
     <style>
+        /* Фирменные цвета Flowers by Sabi */
+        :root {
+            --sabi-pink: #e75480;
+            --sabi-light-pink: #ffebf3;
+            --sabi-rose: #ff9ebb;
+            --sabi-dusty-rose: #b76e79;
+            --sabi-brown: #5a4a4a;
+            --sabi-white: #fff5f5;
+            --sabi-green: #20c997; /* Для акцентов */
+        }
+        
         body {
-            padding-top: 60px;
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, var(--sabi-white) 0%, #fff0f5 100%);
+            font-family: 'Georgia', serif;
+            color: var(--sabi-brown);
+            min-height: 100vh;
+            padding-top: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Фоновые цветочные узоры */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 182, 193, 0.08) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 182, 193, 0.08) 0%, transparent 20%);
+            z-index: -1;
+        }
+        
+        /* Фирменная шапка */
+        .sabi-navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--sabi-light-pink);
+            box-shadow: 0 4px 20px rgba(231, 84, 128, 0.1);
+            padding: 1rem 0;
+        }
+        
+        .sabi-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: var(--sabi-pink);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sabi-logo i {
+            color: var(--sabi-rose);
+            font-size: 1.5rem;
+        }
+        
+        /* Контейнер регистрации */
+        .register-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 85vh;
+            padding: 2rem;
         }
         
         .register-card {
-            max-width: 500px;
-            margin: 0 auto;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(255, 182, 193, 0.15);
+            border: 1px solid #ffe4e9;
+            max-width: 600px;
+            width: 100%;
+            transition: transform 0.3s ease;
+        }
+        
+        .register-card:hover {
+            transform: translateY(-5px);
         }
         
         .register-header {
-            background: linear-gradient(135deg, #20c997 0%, #198754 100%);
+            background: linear-gradient(135deg, var(--sabi-green) 0%, #34ce9e 100%);
             color: white;
-            border-radius: 15px 15px 0 0;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .register-header::before {
+            content: "✿";
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 1.8rem;
+            opacity: 0.7;
+        }
+        
+        .register-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 300;
+            font-size: 2.2rem;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+        
+        .register-header p {
+            opacity: 0.9;
+            margin: 0.5rem 0 0;
+            font-style: italic;
+        }
+        
+        .register-body {
+            padding: 2.5rem;
+        }
+        
+        /* Сообщения */
+        .sabi-alert {
+            border-radius: 15px;
+            border: none;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        
+        .alert-danger {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        /* Форма */
+        .sabi-form-label {
+            color: var(--sabi-dusty-rose);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .sabi-form-control {
+            background: var(--sabi-light-pink);
+            border: 2px solid #ffe4e9;
+            border-radius: 15px;
+            padding: 0.8rem 1.2rem;
+            color: var(--sabi-brown);
+            transition: all 0.3s ease;
+        }
+        
+        .sabi-form-control:focus {
+            background: white;
+            border-color: var(--sabi-rose);
+            box-shadow: 0 0 0 3px rgba(255, 158, 187, 0.2);
+            outline: none;
+        }
+        
+        .sabi-form-control::placeholder {
+            color: var(--sabi-dusty-rose);
+            opacity: 0.7;
+        }
+        
+        .form-text {
+            color: var(--sabi-dusty-rose);
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+        
+        /* Чекбокс */
+        .form-check-input:checked {
+            background-color: var(--sabi-green);
+            border-color: var(--sabi-green);
+        }
+        
+        .form-check-label {
+            color: var(--sabi-dusty-rose);
+        }
+        
+        .form-check-label a {
+            color: var(--sabi-green);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .form-check-label a:hover {
+            color: var(--sabi-pink);
+            text-decoration: underline;
+        }
+        
+        /* Кнопки */
+        .sabi-btn {
+            background: linear-gradient(135deg, var(--sabi-green) 0%, #34ce9e 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0.9rem 2rem;
+            font-family: 'Georgia', serif;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            text-decoration: none;
+        }
+        
+        .sabi-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(32, 201, 151, 0.3);
+            color: white;
+        }
+        
+        .sabi-btn-outline {
+            background: transparent;
+            color: var(--sabi-green);
+            border: 2px solid var(--sabi-green);
+        }
+        
+        .sabi-btn-outline:hover {
+            background: var(--sabi-green);
+            color: white;
+        }
+        
+        /* Ссылки */
+        .sabi-link {
+            color: var(--sabi-green);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .sabi-link:hover {
+            color: var(--sabi-dusty-rose);
+            text-decoration: underline;
+        }
+        
+        /* Разделитель */
+        .sabi-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: var(--sabi-dusty-rose);
+        }
+        
+        .sabi-divider::before,
+        .sabi-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #ffe4e9;
+        }
+        
+        .sabi-divider span {
+            padding: 0 15px;
+            font-style: italic;
+        }
+        
+        /* Индикаторы пароля */
+        .password-strength {
+            height: 5px;
+            border-radius: 3px;
+            margin-top: 5px;
+            background: #ffe4e9;
+            overflow: hidden;
+        }
+        
+        .password-strength-bar {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s ease, background-color 0.3s ease;
+            border-radius: 3px;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .register-body {
+                padding: 1.5rem;
+            }
+            
+            .register-header {
+                padding: 1.5rem;
+            }
+            
+            .register-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .sabi-logo {
+                font-size: 1.5rem;
+            }
+            
+            .row > div {
+                margin-bottom: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-light bg-white fixed-top shadow-sm">
+    <!-- Фирменная шапка -->
+    <nav class="navbar sabi-navbar fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-rose text-primary"></i> Flowers by Sabi
+            <a class="sabi-logo" href="/">
+                <i class="fas fa-rose"></i>
+                <span>Flowers by Sabi</span>
             </a>
-            <a href="/" class="btn btn-outline-primary">
-                <i class="fas fa-home"></i> На главную
+            <a href="/" class="sabi-link">
+                <i class="fas fa-home me-1"></i> На главную
             </a>
         </div>
     </nav>
 
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card register-card">
-                    <div class="card-header register-header">
-                        <h4 class="mb-0"><i class="fas fa-user-plus"></i> Создание аккаунта</h4>
+    <!-- Основной контент -->
+    <div class="register-container">
+        <div class="register-card">
+            <!-- Заголовок -->
+            <div class="register-header">
+                <h1><i class="fas fa-user-plus me-2"></i>Создание аккаунта</h1>
+                <p>Присоединяйтесь к нашему цветочному сообществу</p>
+            </div>
+
+            <!-- Сообщения -->
+            <div class="register-body">
+                <% if (success && success.length > 0) { %>
+                    <div class="alert alert-success sabi-alert alert-dismissible fade show d-flex align-items-center">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <div><%= success %></div>
+                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
                     </div>
-                    <div class="card-body p-4">
-                        
-                        <!-- Сообщение об успехе -->
-                        <% if (success && success.length > 0) { %>
-                            <div class="alert alert-success alert-dismissible fade show">
-                                <%= success %>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        <% } %>
-                        
-                        <!-- Сообщение об ошибке -->
-                        <% if (error && error.length > 0) { %>
-                            <div class="alert alert-danger alert-dismissible fade show">
-                                <i class="fas fa-exclamation-triangle me-2"></i>
-                                <%= error %>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        <% } %>
-                        
-                        <!-- Форма регистрации -->
-                        <form action="/auth/register" method="POST" id="registerForm">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="username" class="form-label">
-                                        <i class="fas fa-user"></i> Имя пользователя *
-                                    </label>
-                                    <input type="text" class="form-control" id="username" name="username" 
-                                           placeholder="От 3 до 30 символов" required minlength="3" maxlength="30"
-                                           value="<%= formData.username || '' %>">
-                                    <small class="form-text text-muted">Будет использоваться для входа</small>
-                                </div>
-                                
-                                <div class="col-md-6 mb-3">
-                                    <label for="email" class="form-label">
-                                        <i class="fas fa-envelope"></i> Email адрес *
-                                    </label>
-                                    <input type="email" class="form-control" id="email" name="email" 
-                                           placeholder="example@mail.com" required
-                                           value="<%= formData.email || '' %>">
-                                </div>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="fullName" class="form-label">
-                                        <i class="fas fa-id-card"></i> Полное имя
-                                    </label>
-                                    <input type="text" class="form-control" id="fullName" name="fullName" 
-                                           placeholder="Иван Иванов"
-                                           value="<%= formData.fullName || '' %>">
-                                </div>
-                                
-                                <div class="col-md-6 mb-3">
-                                    <label for="phone" class="form-label">
-                                        <i class="fas fa-phone"></i> Телефон
-                                    </label>
-                                    <input type="tel" class="form-control" id="phone" name="phone" 
-                                           placeholder="+7 (999) 123-45-67"
-                                           value="<%= formData.phone || '' %>">
-                                </div>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="password" class="form-label">
-                                        <i class="fas fa-lock"></i> Пароль *
-                                    </label>
-                                    <input type="password" class="form-control" id="password" name="password" 
-                                           placeholder="Минимум 6 символов" required minlength="6">
-                                </div>
-                                
-                                <div class="col-md-6 mb-3">
-                                    <label for="confirmPassword" class="form-label">
-                                        <i class="fas fa-lock"></i> Подтверждение пароля *
-                                    </label>
-                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" 
-                                           placeholder="Повторите пароль" required minlength="6">
-                                </div>
-                            </div>
-                            
-                            <div class="form-check mb-4">
-                                <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
-                                <label class="form-check-label" for="terms">
-                                    Я согласен с <a href="/terms" target="_blank">условиями использования</a> и 
-                                    <a href="/privacy" target="_blank">политикой конфиденциальности</a>
-                                </label>
-                            </div>
-                            
-                            <div class="d-grid gap-2 mb-3">
-                                <button type="submit" class="btn btn-success">
-                                    <i class="fas fa-user-plus"></i> Зарегистрироваться
-                                </button>
-                            </div>
-                        </form>
-                        
-                        <hr>
-                        
-                        <div class="text-center">
-                            <p class="mb-2">Уже есть аккаунт?</p>
-                            <a href="/auth/login" class="btn btn-outline-primary">
-                                <i class="fas fa-sign-in-alt"></i> Войти в систему
-                            </a>
+                <% } %>
+                
+                <% if (error && error.length > 0) { %>
+                    <div class="alert alert-danger sabi-alert alert-dismissible fade show d-flex align-items-center">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <div><%= error %></div>
+                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+                    </div>
+                <% } %>
+
+                <!-- Форма регистрации -->
+                <form action="/auth/register" method="POST" id="registerForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="sabi-form-label">
+                                <i class="fas fa-user"></i> Имя пользователя *
+                            </label>
+                            <input type="text" 
+                                   class="form-control sabi-form-control" 
+                                   id="username" 
+                                   name="username" 
+                                   placeholder="От 3 до 30 символов" 
+                                   required 
+                                   minlength="3" 
+                                   maxlength="30"
+                                   value="<%= formData.username || '' %>">
+                            <small class="form-text">Будет использоваться для входа</small>
                         </div>
                         
-                        <div class="text-center mt-3">
-                            <a href="/" class="text-muted">
-                                <i class="fas fa-arrow-left"></i> Вернуться на главную
-                            </a>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="sabi-form-label">
+                                <i class="fas fa-envelope"></i> Email адрес *
+                            </label>
+                            <input type="email" 
+                                   class="form-control sabi-form-control" 
+                                   id="email" 
+                                   name="email" 
+                                   placeholder="example@mail.com" 
+                                   required
+                                   value="<%= formData.email || '' %>">
                         </div>
                     </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="fullName" class="sabi-form-label">
+                                <i class="fas fa-id-card"></i> Полное имя
+                            </label>
+                            <input type="text" 
+                                   class="form-control sabi-form-control" 
+                                   id="fullName" 
+                                   name="fullName" 
+                                   placeholder="Иван Иванов"
+                                   value="<%= formData.fullName || '' %>">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="sabi-form-label">
+                                <i class="fas fa-phone"></i> Телефон
+                            </label>
+                            <input type="tel" 
+                                   class="form-control sabi-form-control" 
+                                   id="phone" 
+                                   name="phone" 
+                                   placeholder="+7 (999) 123-45-67"
+                                   value="<%= formData.phone || '' %>">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="sabi-form-label">
+                                <i class="fas fa-lock"></i> Пароль *
+                            </label>
+                            <input type="password" 
+                                   class="form-control sabi-form-control" 
+                                   id="password" 
+                                   name="password" 
+                                   placeholder="Минимум 6 символов" 
+                                   required 
+                                   minlength="6">
+                            <div class="password-strength">
+                                <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                            </div>
+                            <small class="form-text">Чем длиннее пароль, тем он надежнее</small>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="confirmPassword" class="sabi-form-label">
+                                <i class="fas fa-lock"></i> Подтверждение пароля *
+                            </label>
+                            <input type="password" 
+                                   class="form-control sabi-form-control" 
+                                   id="confirmPassword" 
+                                   name="confirmPassword" 
+                                   placeholder="Повторите пароль" 
+                                   required 
+                                   minlength="6">
+                            <small class="form-text" id="passwordMatchText"></small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                        <label class="form-check-label" for="terms">
+                            Я согласен с <a href="/terms" target="_blank">условиями использования</a> и 
+                            <a href="/privacy" target="_blank">политикой конфиденциальности</a>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="sabi-btn mb-4">
+                        <i class="fas fa-user-plus"></i> Зарегистрироваться
+                    </button>
+                </form>
+
+                <!-- Разделитель -->
+                <div class="sabi-divider">
+                    <span>уже с нами?</span>
+                </div>
+
+                <!-- Ссылка на вход -->
+                <div class="text-center mb-4">
+                    <p class="mb-3" style="color: var(--sabi-dusty-rose);">Уже есть аккаунт?</p>
+                    <a href="/auth/login" class="sabi-btn sabi-btn-outline">
+                        <i class="fas fa-sign-in-alt"></i> Войти в систему
+                    </a>
+                </div>
+
+                <!-- Ссылка на главную -->
+                <div class="text-center">
+                    <a href="/" class="sabi-link">
+                        <i class="fas fa-arrow-left me-1"></i> Вернуться на главную
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Простая валидация формы
-        document.getElementById('registerForm').addEventListener('submit', function(event) {
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const terms = document.getElementById('terms').checked;
+        // Плавное появление формы
+        document.addEventListener('DOMContentLoaded', function() {
+            const registerCard = document.querySelector('.register-card');
+            registerCard.style.opacity = '0';
+            registerCard.style.transform = 'translateY(20px)';
             
-            if (password !== confirmPassword) {
-                event.preventDefault();
-                alert('Пароли не совпадают');
-                return false;
+            setTimeout(() => {
+                registerCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                registerCard.style.opacity = '1';
+                registerCard.style.transform = 'translateY(0)';
+            }, 100);
+            
+            // Валидация пароля
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const strengthBar = document.getElementById('passwordStrengthBar');
+            const matchText = document.getElementById('passwordMatchText');
+            
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                let strength = 0;
+                
+                if (password.length >= 6) strength += 25;
+                if (password.length >= 8) strength += 25;
+                if (/[A-Z]/.test(password)) strength += 25;
+                if (/[0-9]/.test(password)) strength += 25;
+                
+                strengthBar.style.width = strength + '%';
+                
+                if (strength < 50) {
+                    strengthBar.style.backgroundColor = '#ff6b6b';
+                } else if (strength < 75) {
+                    strengthBar.style.backgroundColor = '#ffd93d';
+                } else {
+                    strengthBar.style.backgroundColor = '#20c997';
+                }
+                
+                checkPasswordMatch();
+            });
+            
+            confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+            
+            function checkPasswordMatch() {
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                
+                if (confirmPassword.length === 0) {
+                    matchText.textContent = '';
+                    return;
+                }
+                
+                if (password === confirmPassword) {
+                    matchText.textContent = '✓ Пароли совпадают';
+                    matchText.style.color = '#20c997';
+                    matchText.style.fontWeight = 'bold';
+                } else {
+                    matchText.textContent = '✗ Пароли не совпадают';
+                    matchText.style.color = '#ff6b6b';
+                    matchText.style.fontWeight = 'bold';
+                }
             }
             
-            if (password.length < 6) {
-                event.preventDefault();
-                alert('Пароль должен содержать минимум 6 символов');
-                return false;
+            // Валидация формы при отправке
+            document.getElementById('registerForm').addEventListener('submit', function(event) {
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                const terms = document.getElementById('terms').checked;
+                
+                if (password !== confirmPassword) {
+                    event.preventDefault();
+                    showError('Пароли не совпадают');
+                    return false;
+                }
+                
+                if (password.length < 6) {
+                    event.preventDefault();
+                    showError('Пароль должен содержать минимум 6 символов');
+                    return false;
+                }
+                
+                if (!terms) {
+                    event.preventDefault();
+                    showError('Необходимо согласиться с условиями использования');
+                    return false;
+                }
+                
+                return true;
+            });
+            
+            function showError(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'alert alert-danger sabi-alert';
+                errorDiv.innerHTML = `
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    ${message}
+                `;
+                
+                const registerBody = document.querySelector('.register-body');
+                const form = document.querySelector('#registerForm');
+                registerBody.insertBefore(errorDiv, form);
+                
+                // Автоматически скрыть через 5 секунд
+                setTimeout(() => {
+                    errorDiv.remove();
+                }, 5000);
             }
             
-            if (!terms) {
-                event.preventDefault();
-                alert('Необходимо согласиться с условиями использования');
-                return false;
-            }
-            
-            return true;
+            // Подсветка полей при фокусе
+            const inputs = document.querySelectorAll('.sabi-form-control');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
+            });
         });
     </script>
 </body>

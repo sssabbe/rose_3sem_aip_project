@@ -3,121 +3,418 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %> | Flowers by Sabi</title>
+    <title>Вход | Flowers by Sabi</title>
     
+    <!-- Bootstrap для сетки -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome для иконок -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Шрифты -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;700&family=Georgia&display=swap" rel="stylesheet">
     
     <style>
+        /* Фирменные цвета Flowers by Sabi */
+        :root {
+            --sabi-pink: #e75480;
+            --sabi-light-pink: #ffebf3;
+            --sabi-rose: #ff9ebb;
+            --sabi-dusty-rose: #b76e79;
+            --sabi-brown: #5a4a4a;
+            --sabi-white: #fff5f5;
+        }
+        
         body {
-            padding-top: 60px;
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, var(--sabi-white) 0%, #fff0f5 100%);
+            font-family: 'Georgia', serif;
+            color: var(--sabi-brown);
+            min-height: 100vh;
+            padding-top: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Фоновые цветочные узоры */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 182, 193, 0.08) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 182, 193, 0.08) 0%, transparent 20%);
+            z-index: -1;
+        }
+        
+        /* Фирменная шапка */
+        .sabi-navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--sabi-light-pink);
+            box-shadow: 0 4px 20px rgba(231, 84, 128, 0.1);
+            padding: 1rem 0;
+        }
+        
+        .sabi-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: var(--sabi-pink);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sabi-logo i {
+            color: var(--sabi-rose);
+            font-size: 1.5rem;
+        }
+        
+        /* Карточка входа */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 85vh;
+            padding: 2rem;
         }
         
         .login-card {
-            max-width: 400px;
-            margin: 0 auto;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(255, 182, 193, 0.15);
+            border: 1px solid #ffe4e9;
+            max-width: 450px;
+            width: 100%;
+            transition: transform 0.3s ease;
+        }
+        
+        .login-card:hover {
+            transform: translateY(-5px);
         }
         
         .login-header {
-            background: linear-gradient(135deg, #e83e8c 0%, #6f42c1 100%);
+            background: linear-gradient(135deg, var(--sabi-pink) 0%, var(--sabi-rose) 100%);
             color: white;
-            border-radius: 15px 15px 0 0;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .login-header::before {
+            content: "❀";
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 1.5rem;
+            opacity: 0.7;
+        }
+        
+        .login-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 300;
+            font-size: 2.2rem;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+        
+        .login-header p {
+            opacity: 0.9;
+            margin: 0.5rem 0 0;
+            font-style: italic;
+        }
+        
+        .login-body {
+            padding: 2.5rem;
+        }
+        
+        /* Сообщения */
+        .sabi-alert {
+            border-radius: 15px;
+            border: none;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        
+        .alert-danger {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        /* Форма */
+        .sabi-form-label {
+            color: var(--sabi-dusty-rose);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .sabi-form-control {
+            background: var(--sabi-light-pink);
+            border: 2px solid #ffe4e9;
+            border-radius: 15px;
+            padding: 0.8rem 1.2rem;
+            color: var(--sabi-brown);
+            transition: all 0.3s ease;
+        }
+        
+        .sabi-form-control:focus {
+            background: white;
+            border-color: var(--sabi-rose);
+            box-shadow: 0 0 0 3px rgba(255, 158, 187, 0.2);
+            outline: none;
+        }
+        
+        .sabi-form-control::placeholder {
+            color: var(--sabi-dusty-rose);
+            opacity: 0.7;
+        }
+        
+        .form-check-input:checked {
+            background-color: var(--sabi-pink);
+            border-color: var(--sabi-pink);
+        }
+        
+        .form-check-label {
+            color: var(--sabi-dusty-rose);
+        }
+        
+        /* Кнопки */
+        .sabi-btn {
+            background: linear-gradient(135deg, var(--sabi-pink) 0%, var(--sabi-rose) 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0.9rem 2rem;
+            font-family: 'Georgia', serif;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            text-decoration: none;
+        }
+        
+        .sabi-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(231, 84, 128, 0.3);
+            color: white;
+        }
+        
+        .sabi-btn-outline {
+            background: transparent;
+            color: var(--sabi-pink);
+            border: 2px solid var(--sabi-pink);
+        }
+        
+        .sabi-btn-outline:hover {
+            background: var(--sabi-pink);
+            color: white;
+        }
+        
+        /* Ссылки */
+        .sabi-link {
+            color: var(--sabi-pink);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .sabi-link:hover {
+            color: var(--sabi-dusty-rose);
+            text-decoration: underline;
+        }
+        
+        /* Разделитель */
+        .sabi-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: var(--sabi-dusty-rose);
+        }
+        
+        .sabi-divider::before,
+        .sabi-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #ffe4e9;
+        }
+        
+        .sabi-divider span {
+            padding: 0 15px;
+            font-style: italic;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .login-body {
+                padding: 1.5rem;
+            }
+            
+            .login-header {
+                padding: 1.5rem;
+            }
+            
+            .login-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .sabi-logo {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-light bg-white fixed-top shadow-sm">
+    <!-- Фирменная шапка -->
+    <nav class="navbar sabi-navbar fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-rose text-primary"></i> Flowers by Sabi
+            <a class="sabi-logo" href="/">
+                <i class="fas fa-rose"></i>
+                <span>Flowers by Sabi</span>
             </a>
-            <a href="/" class="btn btn-outline-primary">
-                <i class="fas fa-home"></i> На главную
+            <a href="/" class="sabi-link">
+                <i class="fas fa-home me-1"></i> На главную
             </a>
         </div>
     </nav>
 
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card login-card">
-                    <div class="card-header login-header">
-                        <h4 class="mb-0"><i class="fas fa-sign-in-alt"></i> Вход в систему</h4>
+    <!-- Основной контент -->
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Заголовок -->
+            <div class="login-header">
+                <h1><i class="fas fa-sign-in-alt me-2"></i>Вход в систему</h1>
+                <p>Рады видеть вас снова!</p>
+            </div>
+
+            <!-- Сообщения -->
+            <div class="login-body">
+                <% if (success && success.length > 0) { %>
+                    <div class="alert alert-success sabi-alert alert-dismissible fade show d-flex align-items-center">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <div><%= success %></div>
+                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
                     </div>
-                    <div class="card-body p-4">
-                        
-                        <!-- Сообщение об успехе -->
-                        <% if (success && success.length > 0) { %>
-                            <div class="alert alert-success alert-dismissible fade show">
-                                <%= success %>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        <% } %>
-                        
-                        <!-- Сообщение об ошибке -->
-                        <% if (error && error.length > 0) { %>
-                            <div class="alert alert-danger alert-dismissible fade show">
-                                <i class="fas fa-exclamation-triangle me-2"></i>
-                                <%= error %>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        <% } %>
-                        
-                        <!-- Форма входа -->
-                        <form action="/auth/login" method="POST">
-                            <div class="mb-3">
-                                <label for="username" class="form-label">
-                                    <i class="fas fa-user"></i> Имя пользователя или Email *
-                                </label>
-                                <input type="text" class="form-control" id="username" name="username" 
-                                       placeholder="Введите имя пользователя или email" 
-                                       required
-                                       value="<%= typeof username !== 'undefined' ? username : '' %>">
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="password" class="form-label">
-                                    <i class="fas fa-lock"></i> Пароль *
-                                </label>
-                                <input type="password" class="form-control" id="password" name="password" 
-                                       placeholder="Введите пароль" required>
-                            </div>
-                            
-                            <div class="mb-3 form-check">
-                                <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                                <label class="form-check-label" for="remember">Запомнить меня</label>
-                            </div>
-                            
-                            <div class="d-grid gap-2 mb-3">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-sign-in-alt"></i> Войти
-                                </button>
-                            </div>
-                        </form>
-                        
-                        <hr>
-                        
-                        <div class="text-center">
-                            <p class="mb-2">Нет аккаунта?</p>
-                            <a href="/auth/register" class="btn btn-outline-primary">
-                                <i class="fas fa-user-plus"></i> Зарегистрироваться
-                            </a>
-                        </div>
-                        
-                        <div class="text-center mt-3">
-                            <a href="/" class="text-muted">
-                                <i class="fas fa-arrow-left"></i> Вернуться на главную
-                            </a>
-                        </div>
+                <% } %>
+                
+                <% if (error && error.length > 0) { %>
+                    <div class="alert alert-danger sabi-alert alert-dismissible fade show d-flex align-items-center">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <div><%= error %></div>
+                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
                     </div>
+                <% } %>
+
+                <!-- Форма входа -->
+                <form action="/auth/login" method="POST" class="mb-4">
+                    <div class="mb-4">
+                        <label for="username" class="sabi-form-label">
+                            <i class="fas fa-user"></i> Имя пользователя или Email
+                        </label>
+                        <input type="text" 
+                               class="form-control sabi-form-control" 
+                               id="username" 
+                               name="username" 
+                               placeholder="Введите имя пользователя или email" 
+                               required
+                               value="<%= typeof username !== 'undefined' ? username : '' %>">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="password" class="sabi-form-label">
+                            <i class="fas fa-lock"></i> Пароль
+                        </label>
+                        <input type="password" 
+                               class="form-control sabi-form-control" 
+                               id="password" 
+                               name="password" 
+                               placeholder="Введите пароль" 
+                               required>
+                    </div>
+                    
+                    <div class="mb-4 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                        <label class="form-check-label" for="remember">
+                            Запомнить меня
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="sabi-btn mb-4">
+                        <i class="fas fa-sign-in-alt"></i> Войти
+                    </button>
+                </form>
+
+                <!-- Разделитель -->
+                <div class="sabi-divider">
+                    <span>или</span>
+                </div>
+
+                <!-- Регистрация -->
+                <div class="text-center mb-4">
+                    <p class="mb-3" style="color: var(--sabi-dusty-rose);">Нет аккаунта?</p>
+                    <a href="/auth/register" class="sabi-btn sabi-btn-outline">
+                        <i class="fas fa-user-plus"></i> Зарегистрироваться
+                    </a>
+                </div>
+
+                <!-- Ссылка на главную -->
+                <div class="text-center">
+                    <a href="/" class="sabi-link">
+                        <i class="fas fa-arrow-left me-1"></i> Вернуться на главную
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Плавное появление формы
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginCard = document.querySelector('.login-card');
+            loginCard.style.opacity = '0';
+            loginCard.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                loginCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                loginCard.style.opacity = '1';
+                loginCard.style.transform = 'translateY(0)';
+            }, 100);
+            
+            // Подсветка полей при фокусе
+            const inputs = document.querySelectorAll('.sabi-form-control');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
 </body>
 </html>

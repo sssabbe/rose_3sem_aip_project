@@ -1,65 +1,835 @@
 <div class="container py-5">
+    <!-- Хлебные крошки -->
     <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/">Главная</a></li>
-            <li class="breadcrumb-item"><a href="/categories">Категории</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Корзина</li>
+        <ol class="breadcrumb sabi-breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="/" class="sabi-link">
+                    <i class="fas fa-home"></i> Главная
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="/categories" class="sabi-link">
+                    <i class="fas fa-list"></i> Категории
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <i class="fas fa-shopping-cart"></i> Корзина
+            </li>
         </ol>
     </nav>
 
-    <h1 class="mb-4">🛒 Корзина покупок</h1>
-    
+    <!-- Заголовок страницы -->
+    <div class="sabi-page-header mb-5">
+        <h1 class="sabi-page-title">
+            <i class="fas fa-shopping-cart"></i> Корзина покупок
+        </h1>
+        <p class="sabi-page-subtitle">
+            Ваши выбранные товары готовы к оформлению
+        </p>
+    </div>
+
     <% if (cart && cart.length > 0) { %>
-        <div class="alert alert-success">
-            В вашей корзине <strong><%= cart.length %></strong> товаров
+        <!-- Информация о корзине -->
+        <div class="sabi-cart-summary mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="sabi-alert sabi-alert-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        В вашей корзине <strong class="sabi-highlight"><%= cart.length %></strong> 
+                        <%= cart.length === 1 ? 'товар' : cart.length < 5 ? 'товара' : 'товаров' %>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <button class="btn sabi-btn-outline" onclick="continueShopping()">
+                        <i class="fas fa-plus me-2"></i> Добавить ещё
+                    </button>
+                </div>
+            </div>
         </div>
-        
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Товар</th>
-                        <th>Цена</th>
-                        <th>Добавлен</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% cart.forEach(item => { %>
-                    <tr>
-                        <td><%= item.name %></td>
-                        <td class="text-success fw-bold"><%= item.price %> ₽</td>
-                        <td class="text-muted"><small><%= item.addedAt %></small></td>
-                    </tr>
-                    <% }) %>
-                </tbody>
-                <tfoot>
-                    <tr class="table-active">
-                        <th>ИТОГО:</th>
-                        <th class="text-success"><%= total %> ₽</th>
-                        <th></th>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-        
-        <div class="d-flex justify-content-between mt-4">
-            <form action="/categories/cart/clear" method="POST">
-                <button type="submit" class="btn btn-outline-danger">
-                    <i class="fas fa-trash"></i> Очистить корзину
-                </button>
-            </form>
-            <a href="/categories" class="btn btn-primary">
-                <i class="fas fa-shopping-bag"></i> Продолжить покупки
-            </a>
+
+        <!-- Основной контент корзины -->
+        <div class="row">
+            <!-- Список товаров -->
+            <div class="col-lg-8">
+                <div class="sabi-cart-items">
+                    <% cart.forEach((item, index) => { %>
+                        <div class="sabi-cart-item" data-id="<%= item.id %>">
+                            <div class="row align-items-center">
+                                <!-- Изображение товара -->
+                                <div class="col-md-2 col-3">
+                                    <div class="sabi-cart-item-image">
+                                        <% if (item.image) { %>
+                                            <img src="<%= item.image %>" alt="<%= item.name %>" class="img-fluid rounded">
+                                        <% } else { %>
+                                            <div class="sabi-cart-item-placeholder">
+                                                <i class="fas fa-gift"></i>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+
+                                <!-- Информация о товаре -->
+                                <div class="col-md-5 col-6">
+                                    <div class="sabi-cart-item-info">
+                                        <h5 class="sabi-cart-item-title">
+                                            <%= item.name %>
+                                        </h5>
+                                        <p class="sabi-cart-item-category text-muted">
+                                            <i class="fas fa-tag me-1"></i>
+                                            <%= item.category || 'Букеты' %>
+                                        </p>
+                                        <div class="sabi-cart-item-meta">
+                                            <span class="badge sabi-badge-stock">
+                                                <i class="fas fa-check me-1"></i> В наличии
+                                            </span>
+                                            <% if (item.freshness) { %>
+                                                <span class="badge sabi-badge-fresh">
+                                                    <i class="fas fa-leaf me-1"></i> <%= item.freshness %>
+                                                </span>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Управление количеством -->
+                                <div class="col-md-3 col-6">
+                                    <div class="sabi-cart-item-quantity">
+                                        <div class="input-group">
+                                            <button class="btn btn-quantity minus" 
+                                                    onclick="updateQuantity(<%= index %>, -1)">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <input type="number" 
+                                                   class="form-control quantity-input text-center" 
+                                                   value="<%= item.quantity || 1 %>" 
+                                                   min="1" 
+                                                   max="99"
+                                                   onchange="updateQuantityInput(<%= index %>, this.value)"
+                                                   readonly>
+                                            <button class="btn btn-quantity plus" 
+                                                    onclick="updateQuantity(<%= index %>, 1)">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Цена и удаление -->
+                                <div class="col-md-2 col-6">
+                                    <div class="sabi-cart-item-price">
+                                        <div class="h5 mb-0 text-primary">
+                                            <%= (item.price * (item.quantity || 1)).toLocaleString('ru-RU') %> ₽
+                                        </div>
+                                        <div class="text-muted small">
+                                            <%= item.price %> ₽ за шт.
+                                        </div>
+                                    </div>
+                                    <div class="sabi-cart-item-remove">
+                                        <button class="btn btn-link text-danger" 
+                                                onclick="removeItem(<%= index %>)"
+                                                title="Удалить">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+
+                <!-- Дополнительные опции -->
+                <div class="sabi-cart-options mt-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="sabi-form-group">
+                                <label class="sabi-form-label">
+                                    <i class="fas fa-comment-dots me-2"></i>Комментарий к заказу
+                                </label>
+                                <textarea class="form-control sabi-form-control" 
+                                          rows="3" 
+                                          placeholder="Ваши пожелания к заказу (доставка, упаковка и т.д.)"
+                                          id="orderComment"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="sabi-form-group">
+                                <label class="sabi-form-label">
+                                    <i class="fas fa-gift me-2"></i>Подарочная упаковка
+                                </label>
+                                <select class="form-select sabi-form-select" id="giftWrap">
+                                    <option value="0" selected>Без упаковки</option>
+                                    <option value="200">Бумажная упаковка (+200 ₽)</option>
+                                    <option value="500">Подарочная коробка (+500 ₽)</option>
+                                    <option value="800">Люкс упаковка с лентой (+800 ₽)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Панель заказа -->
+            <div class="col-lg-4">
+                <div class="sabi-order-summary">
+                    <div class="sabi-order-header">
+                        <h4><i class="fas fa-receipt me-2"></i>Сводка заказа</h4>
+                    </div>
+                    
+                    <div class="sabi-order-body">
+                        <!-- Детали заказа -->
+                        <div class="sabi-order-details">
+                            <div class="order-row">
+                                <span>Товары (<%= cart.length %>)</span>
+                                <span id="subtotal"><%= total %> ₽</span>
+                            </div>
+                            <div class="order-row">
+                                <span>Доставка</span>
+                                <span id="deliveryCost">0 ₽</span>
+                            </div>
+                            <div class="order-row">
+                                <span>Упаковка</span>
+                                <span id="wrapCost">0 ₽</span>
+                            </div>
+                            <% if (discount > 0) { %>
+                                <div class="order-row text-success">
+                                    <span><i class="fas fa-percentage me-1"></i>Скидка</span>
+                                    <span>-<%= discount %> ₽</span>
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <!-- Итог -->
+                        <div class="sabi-order-total">
+                            <div class="total-row">
+                                <strong>Итого</strong>
+                                <strong id="totalCost"><%= total - discount %> ₽</strong>
+                            </div>
+                        </div>
+
+                        <!-- Промокод -->
+                        <div class="sabi-promocode mt-4">
+                            <div class="input-group">
+                                <input type="text" 
+                                       class="form-control sabi-form-control" 
+                                       placeholder="Промокод"
+                                       id="promoCode">
+                                <button class="btn sabi-btn-outline" onclick="applyPromoCode()">
+                                    Применить
+                                </button>
+                            </div>
+                            <div class="promo-message mt-2" id="promoMessage"></div>
+                        </div>
+
+                        <!-- Кнопки действий -->
+                        <div class="sabi-order-actions mt-4">
+                            <form action="/categories/cart/clear" method="POST" class="d-grid">
+                                <button type="submit" class="btn sabi-btn-outline-danger mb-2">
+                                    <i class="fas fa-trash me-2"></i> Очистить корзину
+                                </button>
+                            </form>
+                            
+                            <button class="btn sabi-btn w-100" onclick="checkout()">
+                                <i class="fas fa-lock me-2"></i> Оформить заказ
+                            </button>
+                            
+                            <a href="/categories" class="btn sabi-btn-outline w-100 mt-2">
+                                <i class="fas fa-shopping-bag me-2"></i> Продолжить покупки
+                            </a>
+                        </div>
+
+                        <!-- Гарантии -->
+                        <div class="sabi-order-guarantees mt-4">
+                            <div class="guarantee-item">
+                                <i class="fas fa-shipping-fast text-primary"></i>
+                                <span>Бесплатная доставка от 3000 ₽</span>
+                            </div>
+                            <div class="guarantee-item">
+                                <i class="fas fa-leaf text-success"></i>
+                                <span>Свежие цветы с гарантией</span>
+                            </div>
+                            <div class="guarantee-item">
+                                <i class="fas fa-shield-alt text-warning"></i>
+                                <span>Безопасная оплата</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     <% } else { %>
-        <div class="alert alert-info text-center py-5">
-            <i class="fas fa-shopping-cart fa-4x mb-3 text-muted"></i>
-            <h4>Корзина пуста</h4>
-            <p>Добавьте товары из наших категорий!</p>
-            <a href="/categories" class="btn btn-primary mt-2">
-                <i class="fas fa-store"></i> Перейти к покупкам
-            </a>
+        <!-- Пустая корзина -->
+        <div class="sabi-empty-cart">
+            <div class="empty-cart-icon">
+                <i class="fas fa-shopping-cart fa-5x"></i>
+            </div>
+            <h3 class="empty-cart-title">Ваша корзина пуста</h3>
+            <p class="empty-cart-text">
+                Кажется, вы ещё не добавили товары в корзину.<br>
+                Посмотрите наши букеты и аксессуары — они вам понравятся!
+            </p>
+            <div class="empty-cart-actions">
+                <a href="/categories" class="sabi-btn">
+                    <i class="fas fa-store me-2"></i> Перейти к покупкам
+                </a>
+                <a href="/" class="sabi-btn sabi-btn-outline">
+                    <i class="fas fa-home me-2"></i> На главную
+                </a>
+            </div>
+            
+            <!-- Рекомендации -->
+            <div class="empty-cart-recommendations mt-5">
+                <h4 class="text-center mb-4">Популярные товары</h4>
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    <div class="col">
+                        <div class="sabi-recommendation-card">
+                            <div class="recommendation-image">
+                                <i class="fas fa-bouquet fa-3x"></i>
+                            </div>
+                            <div class="recommendation-content">
+                                <h5>Романтический букет</h5>
+                                <p>Идеально для свидания</p>
+                                <a href="/categories/bouquets" class="sabi-link">Смотреть →</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="sabi-recommendation-card">
+                            <div class="recommendation-image">
+                                <i class="fas fa-rose fa-3x"></i>
+                            </div>
+                            <div class="recommendation-content">
+                                <h5>Розы премиум</h5>
+                                <p>Элитные сорта</p>
+                                <a href="/categories/roses" class="sabi-link">Смотреть →</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="sabi-recommendation-card">
+                            <div class="recommendation-image">
+                                <i class="fas fa-gift fa-3x"></i>
+                            </div>
+                            <div class="recommendation-content">
+                                <h5>Цветы с подарком</h5>
+                                <p>Комплекты со скидкой</p>
+                                <a href="/categories/gifts" class="sabi-link">Смотреть →</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     <% } %>
 </div>
+
+<!-- Стили для страницы корзины -->
+<style>
+    .sabi-cart-summary {
+        background: linear-gradient(135deg, #fff5f5, #fff0f5);
+        border-radius: 20px;
+        padding: 1.5rem;
+        border: 2px solid #ffe4e9;
+    }
+    
+    .sabi-alert-success {
+        background: linear-gradient(135deg, #d4edda, #c3e6cb);
+        border: none;
+        border-radius: 15px;
+        color: #155724;
+        padding: 1rem 1.5rem;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .sabi-highlight {
+        color: var(--sabi-pink);
+        font-size: 1.2em;
+    }
+    
+    .sabi-cart-items {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .sabi-cart-item {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 20px rgba(255, 182, 193, 0.1);
+        border: 1px solid #ffe4e9;
+        transition: all 0.3s ease;
+    }
+    
+    .sabi-cart-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(255, 182, 193, 0.2);
+    }
+    
+    .sabi-cart-item-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 15px;
+        overflow: hidden;
+        background: var(--sabi-light-pink);
+    }
+    
+    .sabi-cart-item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .sabi-cart-item-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--sabi-rose);
+        font-size: 2rem;
+    }
+    
+    .sabi-cart-item-title {
+        color: var(--sabi-brown);
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .sabi-cart-item-meta {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    .sabi-badge-stock {
+        background: linear-gradient(135deg, #20c997, #34ce9e);
+        color: white;
+        font-weight: normal;
+    }
+    
+    .sabi-badge-fresh {
+        background: linear-gradient(135deg, #ffd166, #ffde8a);
+        color: var(--sabi-brown);
+        font-weight: normal;
+    }
+    
+    .sabi-cart-item-quantity .input-group {
+        width: 140px;
+        border-radius: 15px;
+        overflow: hidden;
+        border: 2px solid #ffe4e9;
+    }
+    
+    .btn-quantity {
+        background: var(--sabi-light-pink);
+        border: none;
+        width: 40px;
+        color: var(--sabi-pink);
+        font-weight: bold;
+    }
+    
+    .quantity-input {
+        border: none;
+        background: white;
+        font-weight: bold;
+        color: var(--sabi-brown);
+    }
+    
+    .sabi-cart-item-price {
+        text-align: right;
+    }
+    
+    .sabi-cart-item-remove {
+        text-align: right;
+        margin-top: 0.5rem;
+    }
+    
+    .sabi-cart-item-remove button {
+        color: #ff6b6b;
+        opacity: 0.7;
+        transition: all 0.3s ease;
+    }
+    
+    .sabi-cart-item-remove button:hover {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+    
+    .sabi-cart-options {
+        background: var(--sabi-light-pink);
+        border-radius: 20px;
+        padding: 1.5rem;
+        border: 1px solid #ffe4e9;
+    }
+    
+    .sabi-order-summary {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(255, 182, 193, 0.15);
+        border: 1px solid #ffe4e9;
+        position: sticky;
+        top: 20px;
+    }
+    
+    .sabi-order-header {
+        background: linear-gradient(135deg, var(--sabi-pink), var(--sabi-rose));
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+    }
+    
+    .sabi-order-body {
+        padding: 1.5rem;
+    }
+    
+    .sabi-order-details {
+        border-bottom: 2px dashed #ffe4e9;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .order-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.8rem;
+        color: var(--sabi-dusty-rose);
+    }
+    
+    .sabi-order-total {
+        padding: 1rem 0;
+        border-top: 2px solid #ffe4e9;
+        border-bottom: 2px solid #ffe4e9;
+    }
+    
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.3rem;
+        color: var(--sabi-brown);
+    }
+    
+    .sabi-promocode .input-group {
+        border-radius: 15px;
+        overflow: hidden;
+        border: 2px solid #ffe4e9;
+    }
+    
+    .promo-message {
+        font-size: 0.9rem;
+        min-height: 20px;
+    }
+    
+    .promo-message.success {
+        color: #20c997;
+    }
+    
+    .promo-message.error {
+        color: #ff6b6b;
+    }
+    
+    .sabi-btn-outline-danger {
+        background: transparent;
+        color: #ff6b6b;
+        border: 2px solid #ff6b6b;
+        border-radius: 15px;
+        padding: 0.7rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .sabi-btn-outline-danger:hover {
+        background: #ff6b6b;
+        color: white;
+    }
+    
+    .sabi-order-guarantees {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    .guarantee-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--sabi-dusty-rose);
+        font-size: 0.9rem;
+    }
+    
+    .sabi-empty-cart {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 25px;
+        border: 2px dashed var(--sabi-rose);
+    }
+    
+    .empty-cart-icon {
+        color: var(--sabi-rose);
+        margin-bottom: 2rem;
+        animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .empty-cart-title {
+        color: var(--sabi-pink);
+        font-family: 'Playfair Display', serif;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-cart-text {
+        color: var(--sabi-dusty-rose);
+        max-width: 500px;
+        margin: 0 auto 2rem;
+    }
+    
+    .empty-cart-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 3rem;
+    }
+    
+    .sabi-recommendation-card {
+        background: var(--sabi-light-pink);
+        border-radius: 20px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        height: 100%;
+        border: 1px solid transparent;
+    }
+    
+    .sabi-recommendation-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--sabi-rose);
+        box-shadow: 0 10px 20px rgba(255, 182, 193, 0.2);
+    }
+    
+    .recommendation-image {
+        color: var(--sabi-pink);
+        margin-bottom: 1rem;
+    }
+    
+    .recommendation-content h5 {
+        color: var(--sabi-brown);
+        margin-bottom: 0.5rem;
+    }
+    
+    .recommendation-content p {
+        color: var(--sabi-dusty-rose);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .sabi-cart-item .row > div {
+            margin-bottom: 1rem;
+        }
+        
+        .sabi-cart-item-price {
+            text-align: left;
+        }
+        
+        .sabi-cart-item-remove {
+            text-align: left;
+        }
+        
+        .empty-cart-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .sabi-recommendation-card {
+            margin-bottom: 1rem;
+        }
+    }
+</style>
+
+<script>
+    // Обновление количества товара
+    function updateQuantity(index, change) {
+        // Здесь должен быть AJAX-запрос к серверу
+        // Для демонстрации просто обновляем интерфейс
+        const input = document.querySelectorAll('.quantity-input')[index];
+        let value = parseInt(input.value) + change;
+        
+        if (value < 1) value = 1;
+        if (value > 99) value = 99;
+        
+        input.value = value;
+        updateCartSummary();
+        showNotification(`Количество обновлено`);
+    }
+    
+    function updateQuantityInput(index, value) {
+        if (value < 1) value = 1;
+        if (value > 99) value = 99;
+        
+        document.querySelectorAll('.quantity-input')[index].value = value;
+        updateCartSummary();
+    }
+    
+    // Удаление товара
+    function removeItem(index) {
+        if (confirm('Удалить товар из корзины?')) {
+            // Здесь должен быть AJAX-запрос к серверу
+            const item = document.querySelectorAll('.sabi-cart-item')[index];
+            item.style.transform = 'translateX(100%)';
+            item.style.opacity = '0';
+            
+            setTimeout(() => {
+                item.remove();
+                updateCartSummary();
+                showNotification('Товар удален из корзины');
+            }, 300);
+        }
+    }
+    
+    // Обновление итоговой суммы
+    function updateCartSummary() {
+        // В реальном приложении здесь будет расчет на сервере
+        // Для демонстрации просто обновим цифры
+        const items = document.querySelectorAll('.sabi-cart-item');
+        let subtotal = 0;
+        
+        items.forEach(item => {
+            const price = parseFloat(item.querySelector('.text-primary').textContent.replace(/[^0-9]/g, ''));
+            subtotal += price;
+        });
+        
+        const deliveryCost = document.getElementById('deliveryCost');
+        const wrapCost = document.getElementById('wrapCost');
+        const totalCost = document.getElementById('totalCost');
+        
+        // Обновляем отображение
+        document.getElementById('subtotal').textContent = subtotal.toLocaleString('ru-RU') + ' ₽';
+        
+        // Расчет доставки
+        const delivery = subtotal > 3000 ? 0 : 300;
+        deliveryCost.textContent = delivery === 0 ? 'Бесплатно' : delivery + ' ₽';
+        
+        // Расчет упаковки
+        const wrapSelect = document.getElementById('giftWrap');
+        const wrapPrice = parseInt(wrapSelect.value);
+        wrapCost.textContent = wrapPrice > 0 ? wrapPrice + ' ₽' : '0 ₽';
+        
+        // Итог
+        const total = subtotal + delivery + wrapPrice;
+        totalCost.textContent = total.toLocaleString('ru-RU') + ' ₽';
+    }
+    
+    // Применение промокода
+    function applyPromoCode() {
+        const promoInput = document.getElementById('promoCode');
+        const promoMessage = document.getElementById('promoMessage');
+        const code = promoInput.value.trim();
+        
+        if (!code) {
+            promoMessage.textContent = 'Введите промокод';
+            promoMessage.className = 'promo-message error';
+            return;
+        }
+        
+        // Здесь будет проверка промокода на сервере
+        // Для демонстрации используем тестовые промокоды
+        const validPromoCodes = {
+            'SABI10': 10,
+            'FLOWER20': 20,
+            'WELCOME': 15
+        };
+        
+        if (validPromoCodes[code.toUpperCase()]) {
+            const discount = validPromoCodes[code.toUpperCase()];
+            promoMessage.textContent = `Промокод применен! Скидка ${discount}%`;
+            promoMessage.className = 'promo-message success';
+            
+            // Обновляем итоговую сумму со скидкой
+            setTimeout(() => {
+                updateCartSummary();
+            }, 100);
+        } else {
+            promoMessage.textContent = 'Промокод недействителен';
+            promoMessage.className = 'promo-message error';
+        }
+    }
+    
+    // Оформление заказа
+    function checkout() {
+        const comment = document.getElementById('orderComment').value;
+        const giftWrap = document.getElementById('giftWrap').value;
+        const promoCode = document.getElementById('promoCode').value;
+        
+        // Здесь будет отправка данных на сервер
+        showNotification('Переход к оформлению заказа...');
+        
+        // В реальном приложении здесь будет редирект на страницу оформления
+        setTimeout(() => {
+            window.location.href = '/checkout';
+        }, 1000);
+    }
+    
+    // Продолжить покупки
+    function continueShopping() {
+        window.location.href = '/categories';
+    }
+    
+    // Слушатели событий
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCartSummary();
+        
+        // Обновляем итог при изменении упаковки
+        document.getElementById('giftWrap').addEventListener('change', updateCartSummary);
+        
+        // Ввод промокода по Enter
+        document.getElementById('promoCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                applyPromoCode();
+            }
+        });
+        
+        // Анимация появления товаров
+        const items = document.querySelectorAll('.sabi-cart-item');
+        items.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateX(-20px)';
+            
+            setTimeout(() => {
+                item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                item.style.opacity = '1';
+                item.style.transform = 'translateX(0)';
+            }, index * 100);
+        });
+    });
+    
+    // Функция уведомлений (из предыдущего кода)
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'sabi-notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas fa-check-circle"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 3000);
+    }
+</script>
