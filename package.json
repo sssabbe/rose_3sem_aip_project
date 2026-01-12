@@ -19,5 +19,19 @@
     "http-errors": "~1.6.3",
     "mongoose": "^8.21.0",
     "morgan": "~1.9.1"
-  }
+  },
+  "description": "",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sssabbe/rose_3sem_aip_project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sssabbe/rose_3sem_aip_project/issues"
+  },
+  "homepage": "https://github.com/sssabbe/rose_3sem_aip_project#readme"
 }

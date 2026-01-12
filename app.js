@@ -1,223 +1,185 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var session = require('express-session');
-var flash = require('connect-flash'); // Добавляем flash сообщения
+const express = require('express');
+const session = require('express-session');
+const cookieParser = require('cookie-parser'); // ← ДОБАВЬТЕ ЭТО
+const path = require('path');
 
-var indexRouter = require('./routes/index');
-var authRouter = require('./routes/auth'); // Добавляем роутер аутентификации
+const app = express();
 
-var app = express();
-
-// ПОДКЛЮЧЕНИЕ К MONGODB
-try {
-    var mongoose = require('mongoose');
-    mongoose.connect('mongodb://localhost/flowerShop2024');
-    console.log('✅ MongoDB подключена');
-} catch (err) {
-    console.log('⚠️ MongoDB не подключена');
-}
-
-// 🆗 НАСТРОЙКА СЕССИЙ
-try {
-    var MongoStore = require('connect-mongo');
-    
-    // НАСТРОЙКА СЕССИЙ
-    app.use(session({
-        secret: 'ThreeCats',
-        cookie: { maxAge: 60 * 60 * 1000 }, // Увеличиваем до 1 часа
-        proxy: true,
-        resave: true,
-        saveUninitialized: true,
-        store: MongoStore.create({  // Для connect-mongo v4+
-            mongoUrl: 'mongodb://localhost/flowerShop2024',
-            ttl: 60 * 60 // 1 час
-        })
-    }));
-    console.log('✅ Используется connect-mongo v4+');
-    
-} catch (err) {
-    // 🆗 СПОСОБ 2: Для старых версий connect-mongo (v3)
-    try {
-        var MongoStore = require('connect-mongo')(session);
-        
-        app.use(session({
-            secret: 'ThreeCats',
-            cookie: { maxAge: 60 * 60 * 1000 }, // 1 час
-            proxy: true,
-            resave: true,
-            saveUninitialized: true,
-            store: new MongoStore({  // Для connect-mongo v3
-                url: 'mongodb://localhost/flowerShop2024',
-                ttl: 60 * 60 // 1 час
-            })
-        }));
-        console.log('✅ Используется connect-mongo v3');
-        
-    } catch (err2) {
-        // 🆗 СПОСОБ 3: Без MongoDB (в памяти)
-        app.use(session({
-            secret: 'ThreeCats',
-            cookie: { maxAge: 60 * 60 * 1000 }, // 1 час
-            proxy: true,
-            resave: true,
-            saveUninitialized: true
-            // store не указываем - сессии в памяти
-        }));
-        console.log('✅ Используется хранение сессий в памяти');
-    }
-}
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Изменяем на true для работы с формами
+// НАСТРОЙКИ - ВАЖНЫЙ ПОРЯДОК:
+// 1. Сначала cookie-parser
 app.use(cookieParser());
+
+// 2. Потом session
+app.use(session({
+    secret: 'test-secret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { 
+        secure: false,
+        maxAge: 1000 * 60 * 60 * 24 // 24 часа
+    }
+}));
+
+// 3. Потом парсеры тела запроса
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// 4. Статические файлы
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ========================
-// 🔧 MIDDLEWARE
-// ========================
+// 5. Настройка EJS
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
-// Flash сообщения
-app.use(flash());
-
-// 🆕 СЧЁТЧИК ПОСЕЩЕНИЙ СТРАНИЦ
+// ПРОСТОЙ middleware
 app.use(function(req, res, next) {
-    // Увеличиваем счётчик на 1 при каждом запросе
-    req.session.counter = (req.session.counter || 0) + 1;
+    console.log(`📝 Запрос: ${req.method} ${req.path}`);
+    console.log('🍪 Куки:', req.cookies);
+    console.log('🔐 Сессия:', req.session);
     
-    // Также сохраняем время последнего запроса
-    req.session.lastRequest = new Date().toLocaleString('ru-RU');
+    // Инициализируем переменные с проверкой на undefined
+    res.locals.visitCount = 1; // значение по умолчанию
+    res.locals.lastVisit = 'первый раз';
+    
+    // Проверяем куки - ТЕПЕРЬ БЕЗОПАСНО
+    if (req.cookies) {
+        let visitCount = parseInt(req.cookies.visitCount) || 0;
+        visitCount++;
+        
+        // Устанавливаем куки
+        res.cookie('visitCount', visitCount, { 
+            maxAge: 1000 * 60 * 60 * 24 * 30,
+            httpOnly: true 
+        });
+        
+        res.cookie('lastVisit', new Date().toLocaleString('ru-RU'), { 
+            maxAge: 1000 * 60 * 60 * 24 * 30,
+            httpOnly: true 
+        });
+        
+        // Передаем в шаблон
+        res.locals.visitCount = visitCount;
+        res.locals.lastVisit = req.cookies.lastVisit || 'первый раз';
+    }
+    
+    // Простое меню
+    res.locals.nav = [
+        { title: 'Главная', url: '/', isActive: req.path === '/' },
+        { title: 'Войти', url: '/auth/login', isActive: req.path === '/auth/login' },
+        { title: 'Регистрация', url: '/auth/register', isActive: req.path === '/auth/register' }
+    ];
+    
+    // Простой пользователь
+    res.locals.user = null;
+    res.locals.currentUser = null;
+    res.locals.isAuthenticated = false;
+    res.locals.isAdmin = false;
+    res.locals.userName = 'Гость';
+    
+    // Счетчик сессии с проверкой
+    if (req.session) {
+        if (!req.session.visitCount) req.session.visitCount = 0;
+        req.session.visitCount++;
+        res.locals.sessionCounter = req.session.visitCount;
+        res.locals.lastRequest = new Date().toLocaleString('ru-RU');
+        res.locals.firstVisit = req.session.firstVisit || new Date().toLocaleString('ru-RU');
+        res.locals.sessionID = req.sessionID || 'no-session';
+    } else {
+        res.locals.sessionCounter = 0;
+        res.locals.lastRequest = 'нет сессии';
+        res.locals.firstVisit = 'нет сессии';
+        res.locals.sessionID = 'no-session';
+    }
+    
+    // Корзина
+    res.locals.cartItemCount = 0;
     
     next();
 });
 
-// 🆕 ДАННЫЕ СЕССИИ ДЛЯ ШАБЛОНОВ
-app.use(require('./middlewares/sessionData.js'));
+// Простые маршруты
+app.get('/', (req, res) => {
+    console.log('📊 Данные для шаблона:');
+    console.log('  visitCount:', res.locals.visitCount);
+    console.log('  sessionCounter:', res.locals.sessionCounter);
+    console.log('  isAuthenticated:', res.locals.isAuthenticated);
+    
+    res.render('index', { 
+        title: 'Главная',
+        message: 'Добро пожаловать в цветочный магазин!',
+        // Дублируем ключевые переменные для надежности
+        visitCount: res.locals.visitCount || 1,
+        lastVisit: res.locals.lastVisit || 'первый раз',
+        sessionCounter: res.locals.sessionCounter || 1,
+        lastRequest: res.locals.lastRequest || 'только что',
+        firstVisit: res.locals.firstVisit || 'только что',
+        sessionID: res.locals.sessionID || 'no-id',
+        isAuthenticated: res.locals.isAuthenticated || false,
+        userName: res.locals.userName || 'Гость',
+        nav: res.locals.nav || [],
+        // Каталоги (если используются)
+        roses: [],
+        bouquets: [],
+        // Корзина
+        cart: { items: [], total: 0, itemCount: 0 }
+    });
+});
 
-// 🆕 АУТЕНТИФИКАЦИЯ И ДАННЫЕ ПОЛЬЗОВАТЕЛЯ
-app.use(require('./middlewares/authMiddleware.js').userData);
+app.get('/auth/login', (req, res) => {
+    res.render('auth/login', { 
+        title: 'Вход в систему',
+        error: null,
+        success: null
+    });
+});
 
-// 🆕 МЕНЮ НАВИГАЦИИ
-app.use(require('./middlewares/createMenu.js'));
+app.post('/auth/login', (req, res) => {
+    // Простая имитация входа
+    if (req.session) {
+        req.session.userId = '12345';
+        req.session.username = 'testuser';
+        req.session.user = {
+            id: '12345',
+            username: 'testuser',
+            role: 'user'
+        };
+        req.session.success = 'Вы успешно вошли!';
+    }
+    
+    res.redirect('/');
+});
 
-// 🆕 ОБРАБОТКА КОРЗИНЫ
-app.use(require('./middlewares/cartMiddleware.js'));
+app.get('/auth/register', (req, res) => {
+    res.render('auth/register', { 
+        title: 'Регистрация',
+        error: null,
+        success: null
+    });
+});
 
-// 🆕 ОСНОВНЫЕ ДАННЫЕ МАГАЗИНА
-app.use(require('./middlewares/shopData.js'));
+// Выход
+app.get('/auth/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy();
+    }
+    res.redirect('/');
+});
 
-// Flash сообщения в шаблоны
+// Обработка 404
 app.use(function(req, res, next) {
-    res.locals.error = req.flash('error');
-    res.locals.success = req.flash('success');
-    res.locals.warning = req.flash('warning');
-    res.locals.info = req.flash('info');
-    next();
+    res.status(404).send('Страница не найдена');
 });
 
-// ========================
-// 📌 РОУТЫ
-// ========================
-app.use('/', indexRouter);
-app.use('/auth', authRouter); // Подключаем роутер аутентификации
-
-// Защищенные маршруты (пример)
-app.get('/profile', require('./middlewares/authMiddleware.js').isAuthenticated, (req, res) => {
-    res.render('auth/profile', {
-        title: 'Личный кабинет',
-        user: req.session.user
-    });
-});
-
-app.get('/my-orders', require('./middlewares/authMiddleware.js').isAuthenticated, (req, res) => {
-    res.render('auth/orders', {
-        title: 'Мои заказы'
-    });
-});
-
-// Маршрут для просмотра данных сессии
-app.get('/session-info', (req, res) => {
-    res.json({
-        sessionID: req.sessionID,
-        counter: req.session.counter || 0,
-        lastRequest: req.session.lastRequest || 'никогда',
-        userId: req.session.userId || 'не авторизован',
-        username: req.session.username || 'гость',
-        role: req.session.role || 'гость',
-        sessionData: req.session
-    });
-});
-
-// Маршрут для теста счётчика
-app.get('/counter-test', (req, res) => {
-    res.send(`
-        <h1>Тест счётчика сессии</h1>
-        <p>Текущее значение счётчика: <strong>${req.session.counter || 0}</strong></p>
-        <p>Обнови страницу - счётчик увеличится!</p>
-        <p><a href="/">На главную</a></p>
-        <p><a href="/session-info">Посмотреть все данные сессии (JSON)</a></p>
-        <p><a href="/auth/login">Войти в систему</a></p>
-        <p><a href="/auth/register">Зарегистрироваться</a></p>
-    `);
-});
-
-// Маршрут для теста middleware
-app.get('/test-middleware', (req, res) => {
-    res.send(`
-        <h1>Тест middleware</h1>
-        <h2>Доступные переменные:</h2>
-        <ul>
-            <li>sessionID: ${res.locals.sessionID}</li>
-            <li>sessionCounter: ${res.locals.sessionCounter}</li>
-            <li>lastRequest: ${res.locals.lastRequest}</li>
-            <li>cartItemCount: ${res.locals.cartItemCount}</li>
-            <li>userName: ${res.locals.userName}</li>
-            <li>isAuthenticated: ${res.locals.isAuthenticated}</li>
-            <li>currentUser: ${res.locals.currentUser ? JSON.stringify(res.locals.currentUser) : 'нет'}</li>
-            <li>isAdmin: ${res.locals.isAdmin}</li>
-            <li>shopInfo.name: ${res.locals.shopInfo ? res.locals.shopInfo.name : 'нет'}</li>
-        </ul>
-        <p><a href="/">На главную</a></p>
-    `);
-});
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-    next(createError(404));
-});
-
-// error handler
+// Обработка ошибок
 app.use(function(err, req, res, next) {
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-    
-    res.status(err.status || 500);
-    res.render('error', { 
-        title: 'Ошибка',
-        message: err.message
-    });
+    console.error('💥 Ошибка сервера:', err);
+    res.status(500).send('Произошла ошибка сервера');
 });
 
 // Запуск сервера
-const PORT = process.env.PORT || 3001;
+const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`\n🚀 СЕРВЕР ЗАПУЩЕН!`);
-    console.log(`👉 http://localhost:${PORT}`);
-    console.log(`👉 http://localhost:${PORT}/counter-test - тест счётчика`);
-    console.log(`👉 http://localhost:${PORT}/session-info - данные сессии`);
-    console.log(`👉 http://localhost:${PORT}/test-middleware - тест middleware`);
-    console.log(`👉 http://localhost:${PORT}/auth/login - страница входа`);
-    console.log(`👉 http://localhost:${PORT}/auth/register - регистрация`);
-    console.log(`\n📊 Сессии обновляются каждые 60 минут`);
-    console.log(`🎯 Счётчик увеличивается при каждом запросе`);
-    console.log(`🔧 Подключены middleware: sessionData, authMiddleware, createMenu, cartMiddleware, shopData`);
+    console.log(`✅ Сервер запущен: http://localhost:${PORT}`);
+    console.log(`📁 Директория: ${__dirname}`);
+    console.log(`⚠️  Установите cookie-parser: npm install cookie-parser`);
 });
-
-module.exports = app;

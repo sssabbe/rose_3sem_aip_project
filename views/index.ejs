@@ -1,64 +1,142 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-            <a class="navbar-brand" href="/">🌹 Магазин цветов</a>
-            <div class="navbar-nav">
-                <!-- 🆕 ПОКАЗЫВАЕМ СЧЁТЧИК СЕССИИ -->
-                <span class="nav-item nav-link">
-                    Запросов в сессии: <strong><%= sessionCounter || 0 %></strong>
-                </span>
-                <span class="nav-item nav-link">
-                    Последний запрос: <strong><%= lastRequest || 'только что' %></strong>
-                </span>
+<div class="row mb-5">
+    <div class="col-12">
+        <!-- Герой-секция -->
+        <div class="hero-section text-center py-5" style="
+            background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), 
+                        url('https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            border-radius: 20px;
+            margin-bottom: 40px;
+        ">
+            <h1 class="display-4 logo-font mb-4" style="font-size: 3.5rem;">
+                <i class="fas fa-rose text-danger"></i> Flowers by Sabi
+            </h1>
+            <p class="lead fs-4 mb-4">Лучшие цветы для ваших особенных моментов</p>
+            
+            <% if (isAuthenticated) { %>
+                <div class="alert alert-success d-inline-block">
+                    <h5 class="mb-0">
+                        <i class="fas fa-heart"></i> Рады видеть вас снова, <%= user.username %>!
+                    </h5>
+                </div>
+            <% } else { %>
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <a href="/auth/login" class="btn btn-primary btn-lg px-5">
+                        <i class="fas fa-sign-in-alt"></i> Войти
+                    </a>
+                    <a href="/auth/register" class="btn btn-outline-primary btn-lg px-5">
+                        <i class="fas fa-user-plus"></i> Регистрация
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<!-- Категории -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="text-center mb-4" style="font-size: 2.5rem;">Наши категории</h2>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card product-card h-100 text-center border-0">
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <i class="fas fa-rose fa-3x text-danger"></i>
+                </div>
+                <h3 class="card-title">Розы</h3>
+                <p class="card-text">Классические и редкие сорта роз для любого повода</p>
+                <a href="/roses" class="btn btn-outline-primary">Смотреть все</a>
             </div>
         </div>
-    </nav>
-
-    <div class="container mt-4">
-        <h1>Добро пожаловать в магазин цветов!</h1>
-        
-        <!-- 🆕 БЛОК ИНФОРМАЦИИ О СЕССИИ -->
-        <div class="alert alert-info mt-4">
-            <h4>📊 Информация о текущей сессии:</h4>
-            <ul>
-                <li>ID сессии: <code><%= sessionID %></code></li>
-                <li>Количество запросов в этой сессии: <strong><%= sessionCounter || 0 %></strong></li>
-                <li>Последний запрос: <strong><%= lastRequest || 'только что' %></strong></li>
-                <li>Сессия истечет через: <strong>60 секунд</strong> неактивности</li>
-            </ul>
-            <a href="/session-info" class="btn btn-sm btn-outline-info">Посмотреть все данные сессии (JSON)</a>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card product-card h-100 text-center border-0">
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <i class="fas fa-birthday-cake fa-3x text-warning"></i>
+                </div>
+                <h3 class="card-title">Букеты</h3>
+                <p class="card-text">Готовые композиции для праздников и торжеств</p>
+                <a href="/bouquets" class="btn btn-outline-primary">Смотреть все</a>
+            </div>
         </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card product-card h-100 text-center border-0">
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <i class="fas fa-gift fa-3x text-success"></i>
+                </div>
+                <h3 class="card-title">Подарки</h3>
+                <p class="card-text">Дополнительные подарки к цветам</p>
+                <a href="/gifts" class="btn btn-outline-primary">Смотреть все</a>
+            </div>
+        </div>
+    </div>
+</div>
 
-        <!-- Остальной код остаётся без изменений -->
-        <h2 class="mt-5">Наши розы</h2>
-        <div class="row">
-            <% roses.forEach(rose => { %>
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title"><%= rose.name %></h5>
-                        <p class="card-text"><%= rose.price %> ₽</p>
-                        <form action="/add-to-cart" method="POST">
-                            <input type="hidden" name="productId" value="<%= rose.id %>">
-                            <button type="submit" class="btn btn-primary">В корзину</button>
-                        </form>
+<!-- Статистика -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">
+                    <i class="fas fa-chart-line"></i> Статистика ваших посещений
+                </h3>
+                
+                <div class="row text-center">
+                    <div class="col-md-3 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <h4 class="text-primary"><%= sessionCounter || 0 %></h4>
+                            <small>Запросов в этой сессии</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <h4 class="text-primary"><%= visitCount || 0 %></h4>
+                            <small>Всего посещений</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <h4 class="text-primary">
+                                <%= isAuthenticated ? '✅' : '❌' %>
+                            </h4>
+                            <small>Статус авторизации</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <div class="p-3 bg-light rounded">
+                            <h4 class="text-primary"><%= cartItemCount || 0 %></h4>
+                            <small>Товаров в корзине</small>
+                        </div>
                     </div>
                 </div>
+                
+                <% if (isAuthenticated && user) { %>
+                    <div class="alert alert-info mt-3">
+                        <h6><i class="fas fa-user-check"></i> Информация о вашем аккаунте:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Имя пользователя:</strong> <%= user.username %>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Роль:</strong> 
+                                <span class="badge <%= user.role === 'admin' ? 'bg-danger' : 'bg-secondary' %>">
+                                    <%= user.role === 'admin' ? 'Администратор' : 'Пользователь' %>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
             </div>
-            <% }); %>
         </div>
-        
-        <!-- ... остальной код корзины ... -->
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
